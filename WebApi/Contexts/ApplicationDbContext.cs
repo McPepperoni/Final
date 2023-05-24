@@ -36,21 +36,86 @@ public class ApplicationDbContext : DbContext
         .ToTable("Users").Property(x => x.CreatedAt);
 
         builder.Entity<UserEntity>()
-        .Property(x => x.Role).HasDefaultValue(Roles.USER);
+        .HasMany(x => x.UserRoles)
+        .WithOne(x => x.User)
+        .OnDelete(DeleteBehavior.Cascade);
 
         builder.Entity<UserEntity>()
         .HasOne(x => x.UserInfo)
-        .WithOne()
+        .WithOne(x => x.User)
         .HasForeignKey<UserInfoEntity>()
         .OnDelete(DeleteBehavior.Cascade);
 
-        // User Entity
+        builder.Entity<UserEntity>()
+        .HasOne(x => x.Cart)
+        .WithOne()
+        .HasForeignKey<CartEntity>()
+        .OnDelete(DeleteBehavior.Cascade);
+
+        // User Info Entity
         builder.Entity<UserInfoEntity>()
         .ToTable("UserInfos");
 
+        // User Role
+        builder.Entity<UserRoleEntity>()
+        .ToTable("UserRoles");
+
+        // Role
+        builder.Entity<RoleEntity>()
+        .ToTable("Roles")
+        .HasMany(x => x.UserRoles)
+        .WithOne(x => x.Role)
+        .OnDelete(DeleteBehavior.Cascade);
+
+        // Category
+        builder.Entity<CategoryEntity>()
+        .ToTable("Categories");
+
+        // Product
+        builder.Entity<ProductEntity>()
+        .ToTable("Products")
+        .HasMany(x => x.Categories)
+        .WithOne(x => x.Product)
+        .OnDelete(DeleteBehavior.Cascade);
+
+        builder.Entity<ProductEntity>()
+        .HasMany<CartItemEntity>()
+        .WithOne(x => x.Product)
+        .OnDelete(DeleteBehavior.Cascade);
+
+        // Product Category
+        builder.Entity<ProductCategoryEntity>()
+        .ToTable("ProductCategories");
+
+        // Category
+        builder.Entity<CategoryEntity>()
+        .ToTable("Categories")
+        .HasMany(x => x.ProductCategories)
+        .WithOne(x => x.Category)
+        .OnDelete(DeleteBehavior.Cascade);
+
+        // Cart Item
+        builder.Entity<CartItemEntity>()
+        .ToTable("CartItems");
+
+
+        // Cart
+        builder.Entity<CartEntity>()
+        .ToTable("Carts")
+        .HasMany(x => x.CartItems)
+        .WithOne()
+        .OnDelete(DeleteBehavior.Cascade);
+
+        // Order
+        builder.Entity<OrderEntity>()
+        .ToTable("Orders")
+        .HasMany(x => x.CartItems)
+        .WithOne()
+        .OnDelete(DeleteBehavior.Cascade);
+
         //JWT Token
         builder.Entity<JWTTokenEntity>()
-        .ToTable("WhiteListedToken");
+        .ToTable("WhiteListedTokens");
     }
 
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)

@@ -14,10 +14,8 @@ public interface IUserService
 {
     Task<PaginationResponseDTO<UserDTO>> Get(PaginationRequestDTO paginationRequest);
     Task<UserEntity> Get(string id);
-    Task<SearchResponseUserDTO> Search(SearchRequestUserDTO searchRequest);
     Task<UserDTO> Update(UserPatchDTO entity, string id);
     Task<string> Delete(string id);
-    Task<ListDTO<string>> DeleteAll();
 }
 
 public class UserService : BaseService<UserEntity>, IUserService
@@ -93,64 +91,5 @@ public class UserService : BaseService<UserEntity>, IUserService
         await _dbContext.SaveChangesAsync();
 
         return _mapper.Map<UserDTO>(user);
-    }
-
-    public async Task<ListDTO<string>> DeleteAll()
-    {
-        var users = _dbSet.ToList();
-        var res = new ListDTO<string>();
-
-        foreach (var item in users)
-        {
-            _dbSet.Remove(item);
-            res.Items.Add(item.Id);
-        }
-
-        await _dbContext.SaveChangesAsync();
-        return res;
-    }
-
-    public async Task<SearchResponseUserDTO> Search(SearchRequestUserDTO searchRequest)
-    {
-        var byEmailResult = new SearchResultDTO<List<UserDTO>>();
-        var byNameResult = new SearchResultDTO<List<UserDTO>>();
-
-        if (searchRequest.IncludeEmail)
-        {
-            var byEmail = await _dbSet.Include(x => x.UserInfo).Where(x => EF.Functions.Like(x.Email.ToLower(), $"%{searchRequest.Query.ToLower()}%"))
-                                .ToListAsync();
-
-            byEmailResult = new SearchResultDTO<List<UserDTO>>()
-            {
-                Total = byEmail.Count,
-                Data = _mapper.Map<List<UserDTO>>(byEmail.Take(searchRequest.Limit).ToList()),
-            };
-        }
-
-        if (searchRequest.IncludeEmail)
-        {
-            var byName = (await _dbSet.Include(x => x.UserInfo)
-                                .Where(x => EF.Functions.Like(x.UserInfo.FirstName.ToLower(), $"%{searchRequest.Query.ToLower()}%") ||
-                                            EF.Functions.Like(x.UserInfo.LastName.ToLower(), $"%{searchRequest.Query.ToLower()}%"))
-                                .ToListAsync())
-                                .Take(searchRequest.Limit)
-                                .ToList();
-
-            byNameResult = new SearchResultDTO<List<UserDTO>>()
-            {
-                Total = byName.Count,
-                Data = _mapper.Map<List<UserDTO>>(byName.Take(searchRequest.Limit).ToList()),
-            };
-        }
-
-        return new()
-        {
-            SearchParams = searchRequest,
-            Result = new()
-            {
-                ByEmail = byEmailResult,
-                ByName = byNameResult
-            }
-        };
     }
 }

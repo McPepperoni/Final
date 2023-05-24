@@ -16,7 +16,6 @@ public class LoginResponseDTO
 public class VerifyCredentialResponseDTO
 {
     public bool Email { get; set; } = true;
-    public bool UserName { get; set; } = true;
     public bool PhoneNumber { get; set; } = true;
 }
 

@@ -13,11 +13,6 @@ public static class UserValidators
         .Matches("[^a-zA-Z0-9]").WithMessage("Password must contains special character");
     }
 
-    public static IRuleBuilderOptions<T, string> UserName<T>(this IRuleBuilder<T, string> ruleBuilder)
-    {
-        return ruleBuilder.NotEmpty().MinimumLength(8).WithMessage("Username must be longer than 8 character");
-    }
-
     public static IRuleBuilderOptions<T, string> Email<T>(this IRuleBuilder<T, string> ruleBuilder)
     {
         return ruleBuilder.NotEmpty()

@@ -28,13 +28,6 @@ public class UserController : BaseController
     public async Task<IActionResult> GetAll([FromQuery] PaginationRequestDTO paginationRequest)
         => Ok(await _userService.Get(paginationRequest));
 
-    [AllowAnonymous]
-    [HttpGet("search")]
-    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(SearchResponseUserDTO))]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> Search([FromQuery] SearchRequestUserDTO searchRequest)
-        => Ok(await _userService.Search(searchRequest));
-
     /// <summary>
     /// To patch an existing user
     /// </summary>
@@ -46,15 +39,6 @@ public class UserController : BaseController
     [ProducesResponseType(StatusCodes.Status409Conflict)]
     public async Task<IActionResult> Patch([FromBody] UserPatchDTO userPatchDTO, [FromRoute] string id)
     => Ok(await _userService.Update(userPatchDTO, id));
-
-    /// <summary>
-    /// To delete all user
-    /// </summary>
-    /// <returns></returns>
-    [HttpDelete]
-    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ListDTO<string>))]
-    public async Task<IActionResult> DeleteAll()
-    => Ok(await _userService.DeleteAll());
 
     /// <summary>
     /// To delete user with an Id

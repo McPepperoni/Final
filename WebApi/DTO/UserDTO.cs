@@ -5,7 +5,6 @@ namespace WebApi.DTOs;
 
 public class UserDTO : BaseDTO
 {
-    public string UserName { get; set; }
     public string Email { get; set; }
     public string Role { get; set; }
     public UserInfoDTO UserInfo { get; set; }
@@ -15,7 +14,6 @@ public class UserDTOValidator : AbstractValidator<UserDTO>
 {
     public UserDTOValidator()
     {
-        RuleFor(x => x.UserName).UserName();
         RuleFor(x => x.Email).Email();
         RuleFor(x => x.UserInfo).SetValidator(new UserInfoDTOValidator());
     }
@@ -66,7 +64,6 @@ public class DeleteUserDTOValidator : AbstractValidator<DeleteUserDTO>
 
 public class UserPatchDTO
 {
-    public string UserName { get; set; }
     public string Password { get; set; }
     public string Email { get; set; }
     public string PhoneNumber { get; set; }
@@ -77,7 +74,6 @@ public class UserPatchDTOValidator : AbstractValidator<UserPatchDTO>
 {
     public UserPatchDTOValidator()
     {
-        RuleFor(x => x.UserName).UserName();
         RuleFor(x => x.Password).Password();
         RuleFor(x => x.Email).Email();
         RuleFor(x => x.PhoneNumber).PhoneNumber();
@@ -87,11 +83,9 @@ public class UserPatchDTOValidator : AbstractValidator<UserPatchDTO>
 
 public class UserSignUpDTO
 {
-    public string UserName { get; set; }
     public string Password { get; set; }
     public string Email { get; set; }
-    public string FirstName { get; set; }
-    public string LastName { get; set; }
+    public string Name { get; set; }
     public string PhoneNumber { get; set; }
     public string Address { get; set; }
 }
@@ -100,11 +94,9 @@ public class UserSignUpDTOValidator : AbstractValidator<UserSignUpDTO>
 {
     public UserSignUpDTOValidator()
     {
-        RuleFor(x => x.UserName).UserName();
         RuleFor(x => x.Password).Password();
         RuleFor(x => x.Email).Email();
-        RuleFor(x => x.FirstName).FirstName();
-        RuleFor(x => x.LastName).LastName();
+        RuleFor(x => x.Name).Name();
         RuleFor(x => x.PhoneNumber).PhoneNumber();
         RuleFor(x => x.Address).Address();
     }
@@ -112,7 +104,6 @@ public class UserSignUpDTOValidator : AbstractValidator<UserSignUpDTO>
 
 public class VerifyUserCredentialDTO
 {
-    public string UserName { get; set; }
     public string Email { get; set; }
     public string PhoneNumber { get; set; }
 }
@@ -121,7 +112,6 @@ public class VerifyUserCredentialDTOValidator : AbstractValidator<VerifyUserCred
 {
     public VerifyUserCredentialDTOValidator()
     {
-        RuleFor(x => x.UserName).UserName();
         RuleFor(x => x.Email).Email();
         RuleFor(x => x.PhoneNumber).PhoneNumber();
     }

@@ -9,12 +9,7 @@ public static class UserInfoValidators
         .Matches(@"^0\d{3}\.\d{3}\.\d{3}").WithMessage("Phonenumber does not match format");
     }
 
-    public static IRuleBuilderOptions<T, string> FirstName<T>(this IRuleBuilder<T, string> ruleBuilder)
-    {
-        return ruleBuilder.NotEmpty();
-    }
-
-    public static IRuleBuilderOptions<T, string> LastName<T>(this IRuleBuilder<T, string> ruleBuilder)
+    public static IRuleBuilderOptions<T, string> Name<T>(this IRuleBuilder<T, string> ruleBuilder)
     {
         return ruleBuilder.NotEmpty();
     }
