@@ -2,6 +2,6 @@ namespace WebApi.Constants;
 
 public class Roles
 {
-    public const string ADMIN = "admin";
-    public const string USER = "user";
+    public const string ADMIN = "Admin";
+    public const string USER = "User";
 }

@@ -3,8 +3,8 @@ using System.ComponentModel.DataAnnotations;
 namespace WebApi.DTOs;
 public class PaginationRequestDTO
 {
-    public int Page { get; set; }
-    public int PerPage { get; set; }
+    public int Page { get; set; } = 0;
+    public int PerPage { get; set; } = 20;
 }
 
 public class PaginationResponseDTO<T> where T : class

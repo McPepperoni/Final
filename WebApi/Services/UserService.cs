@@ -27,7 +27,7 @@ public class UserService : BaseService<UserEntity>, IUserService
     public async Task<PaginationResponseDTO<UserDTO>> Get(PaginationRequestDTO paginationRequest)
     {
         paginationRequest.PerPage = paginationRequest.PerPage == 0 ? 20 : paginationRequest.PerPage;
-        var users = await _dbSet.Include(x => x.UserInfo).ToListAsync();
+        var users = await _dbSet.Include(x => x.UserInfo).Include(x => x.UserRoles).ThenInclude(x => x.Role).ToListAsync();
 
         var items = _mapper.Map<List<UserDTO>>(users);
         var res = new PaginationResponseDTO<UserDTO>(paginationRequest, items);

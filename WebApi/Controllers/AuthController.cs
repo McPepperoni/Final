@@ -21,6 +21,16 @@ public class AuthController : BaseController
         _jwtHelper = jwtHelper;
     }
 
+    [AllowAnonymous]
+    [HttpGet]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> ConfirmEmail(string confirmToken)
+    {
+        await _authService.ConfirmEmail(confirmToken);
+        return NoContent();
+    }
+
     /// <summary>
     /// To login
     /// </summary>

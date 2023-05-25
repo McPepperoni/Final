@@ -12,7 +12,7 @@ using WebApi.Contexts;
 namespace WebApi.Db.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230524171601_Init")]
+    [Migration("20230525041055_Init")]
     partial class Init
     {
         /// <inheritdoc />
@@ -428,7 +428,7 @@ namespace WebApi.Db.Migrations
             modelBuilder.Entity("WebApi.Entities.UserRoleEntity", b =>
                 {
                     b.HasOne("WebApi.Entities.RoleEntity", "Role")
-                        .WithMany("UserRoles")
+                        .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade);
 
@@ -460,11 +460,6 @@ namespace WebApi.Db.Migrations
             modelBuilder.Entity("WebApi.Entities.ProductEntity", b =>
                 {
                     b.Navigation("Categories");
-                });
-
-            modelBuilder.Entity("WebApi.Entities.RoleEntity", b =>
-                {
-                    b.Navigation("UserRoles");
                 });
 
             modelBuilder.Entity("WebApi.Entities.UserEntity", b =>

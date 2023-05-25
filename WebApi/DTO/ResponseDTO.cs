@@ -13,12 +13,6 @@ public class LoginResponseDTO
     public UserDTO User { get; set; }
 }
 
-public class VerifyCredentialResponseDTO
-{
-    public bool Email { get; set; } = true;
-    public bool PhoneNumber { get; set; } = true;
-}
-
 public class SearchResultDTO<T> where T : class
 {
     public int Total { get; set; }

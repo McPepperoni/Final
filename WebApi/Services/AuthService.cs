@@ -1,33 +1,39 @@
+using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
+using WebApi.Constants;
 using WebApi.Contexts;
 using WebApi.DTOs;
 using WebApi.Entities;
 using WebApi.Helpers.JWT;
 using WebApi.Middleware.ExceptionHandler;
 using WebApi.Services;
+using WebApi.Settings;
 
 public interface IAuthService
 {
     Task<LoginResponseDTO> RefreshToken(RefreshTokenDTO refreshToken);
     Task<LoginResponseDTO> SignIn(UserLoginDTO userLogin);
     Task<UserDTO> SignUp(UserSignUpDTO userSignUp);
-
+    Task ConfirmEmail(string confirmToken);
 }
 
 public class AuthService : BaseService<UserEntity>, IAuthService
 {
     private readonly JWTHelper _jwtHelper;
     private readonly DbSet<JWTTokenEntity> _jwtDbSet;
-    public AuthService(ApplicationDbContext dbContext, JWTHelper jwtHelper, IMapper mapper) : base(dbContext, mapper)
+    private readonly AppSettings _appSettings;
+    public AuthService(ApplicationDbContext dbContext, JWTHelper jwtHelper, IMapper mapper, AppSettings appSettings) : base(dbContext, mapper)
     {
         _jwtHelper = jwtHelper;
         _jwtDbSet = dbContext.WhiteListedToken;
+        _appSettings = appSettings;
     }
     public async Task<LoginResponseDTO> SignIn(UserLoginDTO userLogin)
     {
-        var user = await _dbSet.Where(x => x.Email == userLogin.Email).FirstOrDefaultAsync();
+        var users = _dbSet.Include(x => x.UserRoles).ThenInclude(x => x.Role);
+        var user = await users.Where(x => x.Email == userLogin.Email).FirstOrDefaultAsync();
         if (user == null)
         {
             throw new AppException(HttpStatusCode.NotFound, "User with this email does not exist");
@@ -59,16 +65,72 @@ public class AuthService : BaseService<UserEntity>, IAuthService
         var user = _mapper.Map<UserEntity>(userSignUp);
         user.Cart = new();
 
-        var res = await _dbSet.AddAsync(user);
-
-        if (user == null)
+        var duplicate = await _dbSet.Where(x => x.Email == userSignUp.Email).FirstOrDefaultAsync();
+        if (duplicate != null)
         {
-            throw new AppException(HttpStatusCode.Conflict, "User with that info already existed");
+            throw new AppException(HttpStatusCode.Conflict, "Email already been used");
         }
+
+        duplicate = await _dbSet.Where(x => x.UserInfo.PhoneNumber == userSignUp.PhoneNumber).FirstOrDefaultAsync();
+        if (duplicate != null)
+        {
+            throw new AppException(HttpStatusCode.Conflict, "Phone number has already been used");
+        }
+
+        var role = await _dbContext.Roles.Where(x => x.Name == Roles.USER).FirstOrDefaultAsync();
+        user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password, 11, true);
+        user.UserRoles = new() {
+            new UserRoleEntity{
+                Role = role
+            }
+        };
+        user.Cart = new()
+        {
+            CartProducts = new()
+        };
+        var res = await _dbSet.AddAsync(user);
+        var emailConfirmToken = _jwtHelper.Create(res.Entity, DateTime.UtcNow.AddDays(7), TokenName.EmailConfirmToken);
+
+        await _jwtDbSet.AddAsync(emailConfirmToken);
+
+        var confirmationLink = $"{_appSettings.JWT.Audience}/confirmToken?={emailConfirmToken.Token}";
+        Console.WriteLine(confirmationLink);
 
         await _dbContext.SaveChangesAsync();
 
         return _mapper.Map<UserDTO>(user);
+    }
+
+    public async Task ConfirmEmail(string confirmToken)
+    {
+        var token = await _jwtHelper.AnalyzeToken(confirmToken);
+        if (token == null)
+        {
+            throw new AppException(HttpStatusCode.BadRequest, "Invalid token");
+        }
+
+        var claim = token.Claims.Where(c => c.Type == JwtRegisteredClaimNames.Name).FirstOrDefault();
+        if (claim.Value != TokenName.EmailConfirmToken.ToString())
+        {
+            throw new AppException(HttpStatusCode.BadRequest, "Invalid token");
+        }
+
+        var tokenEntity = await _jwtDbSet.Where(x => x.Token == confirmToken).FirstOrDefaultAsync();
+        if (tokenEntity == null)
+        {
+            throw new AppException(HttpStatusCode.BadRequest, "Invalid token");
+        }
+
+        var user = await _dbSet.FindAsync(token.Subject);
+        if (user == null)
+        {
+            throw new AppException(HttpStatusCode.BadRequest, "Invalid token");
+        }
+
+        user.EmailConfirmed = true;
+        _jwtDbSet.Remove(tokenEntity);
+
+        await _dbContext.SaveChangesAsync();
     }
 
     public async Task<LoginResponseDTO> RefreshToken(RefreshTokenDTO refreshTokenDTO)

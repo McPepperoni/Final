@@ -72,7 +72,7 @@ public class ApplicationDbContext : DbContext
         // Role
         builder.Entity<RoleEntity>()
         .ToTable("Roles")
-        .HasMany(x => x.UserRoles)
+        .HasMany<UserRoleEntity>()
         .WithOne(x => x.Role)
         .OnDelete(DeleteBehavior.Cascade);
 
@@ -99,7 +99,7 @@ public class ApplicationDbContext : DbContext
         // Category
         builder.Entity<CategoryEntity>()
         .ToTable("Categories")
-        .HasMany(x => x.ProductCategories)
+        .HasMany<ProductCategoryEntity>()
         .WithOne(x => x.Category)
         .OnDelete(DeleteBehavior.Cascade);
 

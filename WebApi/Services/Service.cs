@@ -9,6 +9,7 @@ public static class Services
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<IJWTService, JWTService>();
+        services.AddScoped<IProductService, ProductService>();
 
         return services;
     }

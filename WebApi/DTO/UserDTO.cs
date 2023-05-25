@@ -8,6 +8,7 @@ public class UserDTO : BaseDTO
     public string Email { get; set; }
     public string Role { get; set; }
     public UserInfoDTO UserInfo { get; set; }
+    public List<UserRoleDTO> UserRoles { get; set; }
 }
 
 public class UserDTOValidator : AbstractValidator<UserDTO>
@@ -121,32 +122,4 @@ public class RefreshTokenDTO
 {
     public string AccessToken { get; set; }
     public string RefreshToken { get; set; }
-}
-
-public class SearchRequestUserDTO
-{
-    public string Query { get; set; }
-    public int Limit { get; set; } = 10;
-    public bool IncludeEmail { get; set; } = true;
-    public bool IncludeName { get; set; } = true;
-}
-
-public class SearchUserDTOValidator : AbstractValidator<SearchRequestUserDTO>
-{
-    public SearchUserDTOValidator()
-    {
-        RuleFor(x => x.Query).NotEmpty().MinimumLength(3).WithMessage("Query string must be longer than 3 characters");
-    }
-}
-
-public class SearchResponseUserDTO
-{
-    public SearchRequestUserDTO SearchParams { get; set; }
-    public UserSearchResultDTO Result { get; set; }
-}
-
-public class UserSearchResultDTO
-{
-    public SearchResultDTO<List<UserDTO>> ByEmail { get; set; }
-    public SearchResultDTO<List<UserDTO>> ByName { get; set; }
 }
