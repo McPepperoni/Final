@@ -25,12 +25,16 @@ public class ProductService : BaseService<ProductEntity>, IProductService
                                 .ThenInclude(x => x.Category)
                                 .ToListAsync();
 
-
         if (!string.IsNullOrEmpty(paginationRequest.SearchTerm))
         {
             products = products
                         .Where(x => EF.Functions.Like(x.Name.ToUpper(), $"%{paginationRequest.SearchTerm.ToUpper()}%"))
                         .ToList();
+        }
+
+        if (paginationRequest.PublicStatus)
+        {
+            products = products.Where(x => x.PublicStatus == paginationRequest.PublicStatusValue).ToList();
         }
 
         if (!string.IsNullOrEmpty(paginationRequest.Categories))

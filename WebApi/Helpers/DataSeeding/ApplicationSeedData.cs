@@ -12,7 +12,7 @@ public class ApplicationSeedData
     {
         using var scope = services.CreateScope();
         var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-        // await dbContext.Database.MigrateAsync();
+
         if (!dbContext.Users.Any())
         {
             var users = GetJson<UserEntity>(@"Db/UserData.json");
@@ -53,7 +53,7 @@ public class ApplicationSeedData
             {
                 item.Categories = new();
                 var random = new Random();
-                for (int i = 0; i < random.Next(5); i++)
+                for (int i = 0; i < random.Next(2, 5); i++)
                 {
                     var productCategory = new ProductCategoryEntity()
                     {

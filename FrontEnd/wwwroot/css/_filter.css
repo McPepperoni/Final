@@ -1,0 +1,6 @@
+div.side-bar {
+  height: 90vh;
+  width: 280px;
+  position: sticky;
+  left: 0;
+}

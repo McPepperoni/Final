@@ -1,11 +1,5 @@
 namespace WebApi.DTOs;
 
-public class WebSocketResponseDTO<T> where T : class
-{
-    public string status { get; set; }
-    public T data { get; set; }
-}
-
 public class LoginResponseDTO
 {
     public string AccessToken { get; set; }

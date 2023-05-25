@@ -12,7 +12,7 @@ using WebApi.Contexts;
 namespace WebApi.Db.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230525041055_Init")]
+    [Migration("20230525131421_Init")]
     partial class Init
     {
         /// <inheritdoc />
@@ -400,7 +400,7 @@ namespace WebApi.Db.Migrations
             modelBuilder.Entity("WebApi.Entities.ProductCategoryEntity", b =>
                 {
                     b.HasOne("WebApi.Entities.CategoryEntity", "Category")
-                        .WithMany("ProductCategories")
+                        .WithMany()
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Cascade);
 
@@ -445,11 +445,6 @@ namespace WebApi.Db.Migrations
             modelBuilder.Entity("WebApi.Entities.CartEntity", b =>
                 {
                     b.Navigation("CartProducts");
-                });
-
-            modelBuilder.Entity("WebApi.Entities.CategoryEntity", b =>
-                {
-                    b.Navigation("ProductCategories");
                 });
 
             modelBuilder.Entity("WebApi.Entities.OrderEntity", b =>

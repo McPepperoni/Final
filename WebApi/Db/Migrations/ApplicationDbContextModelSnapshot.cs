@@ -397,7 +397,7 @@ namespace WebApi.Db.Migrations
             modelBuilder.Entity("WebApi.Entities.ProductCategoryEntity", b =>
                 {
                     b.HasOne("WebApi.Entities.CategoryEntity", "Category")
-                        .WithMany("ProductCategories")
+                        .WithMany()
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Cascade);
 
@@ -442,11 +442,6 @@ namespace WebApi.Db.Migrations
             modelBuilder.Entity("WebApi.Entities.CartEntity", b =>
                 {
                     b.Navigation("CartProducts");
-                });
-
-            modelBuilder.Entity("WebApi.Entities.CategoryEntity", b =>
-                {
-                    b.Navigation("ProductCategories");
                 });
 
             modelBuilder.Entity("WebApi.Entities.OrderEntity", b =>
