@@ -9,10 +9,10 @@ using WebApi.Contexts;
 
 #nullable disable
 
-namespace WebApi.DB.Migrations
+namespace WebApi.Db.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230524102402_Init")]
+    [Migration("20230524171601_Init")]
     partial class Init
     {
         /// <inheritdoc />
@@ -37,17 +37,12 @@ namespace WebApi.DB.Migrations
                     b.Property<DateTime?>("ModifiedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("Carts", (string)null);
                 });
 
-            modelBuilder.Entity("WebApi.Entities.CartItemEntity", b =>
+            modelBuilder.Entity("WebApi.Entities.CartProductEntity", b =>
                 {
                     b.Property<string>("Id")
                         .ValueGeneratedOnAdd()
@@ -62,9 +57,6 @@ namespace WebApi.DB.Migrations
                     b.Property<DateTime?>("ModifiedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("OrderEntityId")
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<string>("ProductId")
                         .HasColumnType("nvarchar(450)");
 
@@ -75,11 +67,9 @@ namespace WebApi.DB.Migrations
 
                     b.HasIndex("CartEntityId");
 
-                    b.HasIndex("OrderEntityId");
-
                     b.HasIndex("ProductId");
 
-                    b.ToTable("CartItems", (string)null);
+                    b.ToTable("CartProducts", (string)null);
                 });
 
             modelBuilder.Entity("WebApi.Entities.CategoryEntity", b =>
@@ -153,6 +143,36 @@ namespace WebApi.DB.Migrations
                     b.HasIndex("UserEntityId");
 
                     b.ToTable("Orders", (string)null);
+                });
+
+            modelBuilder.Entity("WebApi.Entities.OrderProductEntity", b =>
+                {
+                    b.Property<string>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime?>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("ModifiedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("OrderEntityId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("ProductId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OrderEntityId");
+
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("OrderProduct", (string)null);
                 });
 
             modelBuilder.Entity("WebApi.Entities.ProductCategoryEntity", b =>
@@ -246,20 +266,20 @@ namespace WebApi.DB.Migrations
                     b.Property<string>("Email")
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<bool>("EmailConfirmed")
+                        .HasColumnType("bit");
+
                     b.Property<DateTime?>("ModifiedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Password")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("UserName")
-                        .HasColumnType("nvarchar(450)");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("UserName", "Email")
+                    b.HasIndex("Email")
                         .IsUnique()
-                        .HasFilter("[UserName] IS NOT NULL AND [Email] IS NOT NULL");
+                        .HasFilter("[Email] IS NOT NULL");
 
                     b.ToTable("Users", (string)null);
                 });
@@ -323,29 +343,20 @@ namespace WebApi.DB.Migrations
 
             modelBuilder.Entity("WebApi.Entities.CartEntity", b =>
                 {
-                    b.HasOne("WebApi.Entities.UserEntity", null)
+                    b.HasOne("WebApi.Entities.UserEntity", "User")
                         .WithOne("Cart")
                         .HasForeignKey("WebApi.Entities.CartEntity", "Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("WebApi.Entities.UserEntity", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId");
-
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("WebApi.Entities.CartItemEntity", b =>
+            modelBuilder.Entity("WebApi.Entities.CartProductEntity", b =>
                 {
                     b.HasOne("WebApi.Entities.CartEntity", null)
-                        .WithMany("CartItems")
+                        .WithMany("CartProducts")
                         .HasForeignKey("CartEntityId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("WebApi.Entities.OrderEntity", null)
-                        .WithMany("CartItems")
-                        .HasForeignKey("OrderEntityId")
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("WebApi.Entities.ProductEntity", "Product")
@@ -370,6 +381,20 @@ namespace WebApi.DB.Migrations
                     b.HasOne("WebApi.Entities.UserEntity", null)
                         .WithMany("Orders")
                         .HasForeignKey("UserEntityId");
+                });
+
+            modelBuilder.Entity("WebApi.Entities.OrderProductEntity", b =>
+                {
+                    b.HasOne("WebApi.Entities.OrderEntity", null)
+                        .WithMany("OrderProducts")
+                        .HasForeignKey("OrderEntityId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("WebApi.Entities.ProductEntity", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId");
+
+                    b.Navigation("Product");
                 });
 
             modelBuilder.Entity("WebApi.Entities.ProductCategoryEntity", b =>
@@ -419,7 +444,7 @@ namespace WebApi.DB.Migrations
 
             modelBuilder.Entity("WebApi.Entities.CartEntity", b =>
                 {
-                    b.Navigation("CartItems");
+                    b.Navigation("CartProducts");
                 });
 
             modelBuilder.Entity("WebApi.Entities.CategoryEntity", b =>
@@ -429,7 +454,7 @@ namespace WebApi.DB.Migrations
 
             modelBuilder.Entity("WebApi.Entities.OrderEntity", b =>
                 {
-                    b.Navigation("CartItems");
+                    b.Navigation("OrderProducts");
                 });
 
             modelBuilder.Entity("WebApi.Entities.ProductEntity", b =>

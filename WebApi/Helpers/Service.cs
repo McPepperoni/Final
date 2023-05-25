@@ -7,10 +7,6 @@ public static class Helpers
         services.AddAutoMapper(typeof(Program));
         services.AddPropertyValidator();
         services.AddJWT();
-        if (!environment.IsEnvironment("Test"))
-        {
-            services.AddDataSeeder();
-        }
 
         return services;
     }

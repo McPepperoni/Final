@@ -8,6 +8,7 @@ public class UserEntity : BaseEntity
 {
     public string Email { get; set; }
     public string Password { get; set; }
+    public bool EmailConfirmed { get; set; }
     public virtual UserInfoEntity UserInfo { get; set; }
     public virtual CartEntity Cart { get; set; }
     public virtual List<OrderEntity> Orders { get; set; }

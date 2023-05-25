@@ -6,10 +6,12 @@ namespace WebApi.Middleware.ExceptionHandler;
 public class ExceptionHandlerMiddleware
 {
     private readonly RequestDelegate _next;
+    private readonly ILogger<ExceptionHandlerMiddleware> _logger;
 
-    public ExceptionHandlerMiddleware(RequestDelegate next)
+    public ExceptionHandlerMiddleware(RequestDelegate next, ILogger<ExceptionHandlerMiddleware> logger)
     {
         _next = next;
+        _logger = logger;
     }
 
     public async Task Invoke(HttpContext context)
@@ -38,6 +40,7 @@ public class ExceptionHandlerMiddleware
                     break;
                 default:
                     response.StatusCode = (int)HttpStatusCode.InternalServerError;
+                    _logger.LogError(ex, "An exception has occur.");
                     break;
             }
 

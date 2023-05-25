@@ -57,8 +57,7 @@ public class AuthService : BaseService<UserEntity>, IAuthService
     public async Task<UserDTO> SignUp(UserSignUpDTO userSignUp)
     {
         var user = _mapper.Map<UserEntity>(userSignUp);
-        // var info = _mapper.Map<UserInfoEntity>(userSignUp);
-        // user.UserInfo = info;
+        user.Cart = new();
 
         var res = await _dbSet.AddAsync(user);
 

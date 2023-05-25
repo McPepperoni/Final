@@ -139,8 +139,7 @@ app.UseWebSockets();
 
 if (!app.Environment.IsEnvironment("Test"))
 {
-    var seeder = app.Services.CreateScope().ServiceProvider.GetService<ApplicationSeedData>();
-    await seeder.EnsureDataAsync();
+    await ApplicationSeedData.EnsureDataAsync(app.Services);
 }
 
 
