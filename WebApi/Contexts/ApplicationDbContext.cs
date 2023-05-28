@@ -9,10 +9,6 @@ namespace WebApi.Contexts;
 public class ApplicationDbContext : DbContext
 {
     private readonly AppSettings _appSettings;
-    public DbSet<UserEntity> Users { get; set; }
-    public DbSet<UserInfoEntity> UserInfos { get; set; }
-    public DbSet<UserRoleEntity> UserRoles { get; set; }
-    public DbSet<RoleEntity> Roles { get; set; }
     public DbSet<CartEntity> Carts { get; set; }
     public DbSet<CartProductEntity> CartProducts { get; set; }
     public DbSet<ProductEntity> Products { get; set; }
@@ -37,45 +33,6 @@ public class ApplicationDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
-        // User
-        builder.Entity<UserEntity>()
-        .ToTable("Users");
-
-        builder.Entity<UserEntity>()
-        .ToTable("Users").Property(x => x.CreatedAt);
-
-        builder.Entity<UserEntity>()
-        .HasMany(x => x.UserRoles)
-        .WithOne(x => x.User)
-        .OnDelete(DeleteBehavior.Cascade);
-
-        builder.Entity<UserEntity>()
-        .HasOne(x => x.UserInfo)
-        .WithOne(x => x.User)
-        .HasForeignKey<UserInfoEntity>()
-        .OnDelete(DeleteBehavior.Cascade);
-
-        builder.Entity<UserEntity>()
-        .HasOne(x => x.Cart)
-        .WithOne(x => x.User)
-        .HasForeignKey<CartEntity>()
-        .OnDelete(DeleteBehavior.Cascade);
-
-        // User Info Entity
-        builder.Entity<UserInfoEntity>()
-        .ToTable("UserInfos");
-
-        // User Role
-        builder.Entity<UserRoleEntity>()
-        .ToTable("UserRoles");
-
-        // Role
-        builder.Entity<RoleEntity>()
-        .ToTable("Roles")
-        .HasMany<UserRoleEntity>()
-        .WithOne(x => x.Role)
-        .OnDelete(DeleteBehavior.Cascade);
-
         // Category
         builder.Entity<CategoryEntity>()
         .ToTable("Categories");

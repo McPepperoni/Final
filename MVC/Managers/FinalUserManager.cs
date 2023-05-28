@@ -11,4 +11,9 @@ public class FinalUserManager : UserManager<UserEntity>
     {
 
     }
+
+    public override async Task<IdentityResult> CreateAsync(UserEntity user, string password) {
+        
+        return await base.CreateAsync(user, password);
+    }
 }

@@ -5,6 +5,7 @@ using System.Security.Claims;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
 using WebApi.Constants;
+using WebApi.DTOs;
 using WebApi.Entities;
 using WebApi.Settings;
 
@@ -17,7 +18,7 @@ public class JWTHelper
         _settings = settings;
     }
 
-    public JWTTokenEntity Create(UserEntity user, DateTime expiredAt, TokenName name = TokenName.AuthToken)
+    public JWTTokenEntity Create(UserDTO user, DateTime expiredAt, TokenName name = TokenName.AuthToken)
     {
         var tokenHandler = new JwtSecurityTokenHandler();
         var key = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_settings.JWT.Key));
@@ -30,9 +31,9 @@ public class JWTHelper
             new Claim(JwtRegisteredClaimNames.Sub, user.Id),
         };
 
-        foreach (var item in user.UserRoles)
+        foreach (var item in user.Roles)
         {
-            claims.Add(new Claim("Role", item.Role.Name));
+            claims.Add(new Claim("Role", item));
         }
 
         var token = new JwtSecurityToken(
@@ -48,7 +49,6 @@ public class JWTHelper
         {
             Token = tokenHandler.WriteToken(token),
             Expires = expiredAt,
-            User = user
         };
     }
 

@@ -13,36 +13,10 @@ public class ApplicationSeedData
         using var scope = services.CreateScope();
         var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
-        if (!dbContext.Users.Any())
+        if (!dbContext.Products.Any())
         {
-            var users = GetJson<UserEntity>(@"Db/UserData.json");
-            var roles = GetJson<RoleEntity>(@"Db/RoleData.json");
             var categories = GetJson<CategoryEntity>(@"Db/CategoryData.json");
             var products = GetJson<ProductEntity>(@"Db/ProductData.json");
-
-            foreach (var item in roles)
-            {
-                await dbContext.Roles.AddAsync(item);
-            }
-
-            foreach (var item in users)
-            {
-                var random = new Random();
-                var userRole = new UserRoleEntity()
-                {
-                    Role = roles[random.Next(roles.Count)],
-                };
-
-                item.Password = BCrypt.Net.BCrypt.HashPassword(item.Password, 11, true);
-                item.Cart = new()
-                {
-                    CartProducts = new()
-                };
-                item.UserRoles = new() {
-                    userRole
-                };
-                await dbContext.Users.AddAsync(item);
-            }
 
             foreach (var item in categories)
             {
