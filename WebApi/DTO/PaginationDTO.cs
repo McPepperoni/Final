@@ -1,5 +1,3 @@
-using System.ComponentModel.DataAnnotations;
-
 namespace WebApi.DTOs;
 public class PaginationRequestDTO
 {
@@ -7,7 +5,7 @@ public class PaginationRequestDTO
     public int PerPage { get; set; } = 20;
 }
 
-public class PaginationResponseDTO<TData> where TData : class
+public class PageData
 {
     public int Count { get; set; }
     public int Page { get; set; }
@@ -15,6 +13,11 @@ public class PaginationResponseDTO<TData> where TData : class
     public int PerPage { get; set; }
     public bool HasNextPage { get; set; }
     public bool HasPrevPage { get; set; }
+}
+
+public class PaginationResponseDTO<TData> where TData : class
+{
+    public PageData PageData { get; set; }
     public List<TData> Data { get; set; }
     public PaginationRequestDTO Filter { get; set; }
 
@@ -22,27 +25,31 @@ public class PaginationResponseDTO<TData> where TData : class
 
     public PaginationResponseDTO(PaginationRequestDTO paginationRequest, List<TData> data)
     {
-        Count = data.Count;
-        PerPage = paginationRequest.PerPage;
-        PageCount = (int)MathF.Ceiling((float)data.Count / (float)paginationRequest.PerPage);
-        Filter = paginationRequest;
-        if (paginationRequest.Page >= PageCount)
+        PageData = new PageData()
         {
-            Page = PageCount - 1;
+            Count = data.Count,
+            PerPage = paginationRequest.PerPage,
+            PageCount = (int)MathF.Ceiling((float)data.Count / (float)paginationRequest.PerPage)
+        };
+
+        Filter = paginationRequest;
+        if (paginationRequest.Page >= PageData.PageCount)
+        {
+            PageData.Page = PageData.PageCount - 1;
         }
         else if (paginationRequest.Page < 0)
         {
-            Page = 0;
+            PageData.Page = 0;
         }
         else
         {
-            Page = paginationRequest.Page;
+            PageData.Page = paginationRequest.Page;
         }
 
-        HasNextPage = Page < PageCount - 1 ? true : false;
-        HasPrevPage = Page > 1 ? true : false;
+        PageData.HasNextPage = PageData.Page < PageData.PageCount - 1 ? true : false;
+        PageData.HasPrevPage = PageData.Page > 0 ? true : false;
 
-        Data = data.Skip(Page * PerPage).Take(PerPage).ToList();
+        Data = data.Skip(PageData.Page * PageData.PerPage).Take(PageData.PerPage).ToList();
     }
 }
 

@@ -19,31 +19,31 @@ public class ProductService : BaseService<ProductEntity>, IProductService
 
     public async Task<PaginationResponseDTO<ProductDTO>> Get(ProductPaginationRequestDTO paginationRequest)
     {
-        var products = await _dbSet
-                                .Where(x => x.Price > paginationRequest.PriceMin && x.Price < paginationRequest.PriceMax)
-                                .Include(x => x.Categories)
-                                .ThenInclude(x => x.Category)
-                                .ToListAsync();
+        var products = _dbSet
+                        .Where(x => x.Price > paginationRequest.PriceMin && x.Price < paginationRequest.PriceMax);
 
         if (!string.IsNullOrEmpty(paginationRequest.SearchTerm))
         {
             products = products
-                        .Where(x => EF.Functions.Like(x.Name.ToUpper(), $"%{paginationRequest.SearchTerm.ToUpper()}%"))
-                        .ToList();
+                        .Where(x => EF.Functions.Like(x.Name.ToUpper(), $"%{paginationRequest.SearchTerm.ToUpper()}%"));
         }
 
         if (paginationRequest.PublicStatus)
         {
-            products = products.Where(x => x.PublicStatus == paginationRequest.PublicStatusValue).ToList();
+            products = products.Where(x => x.PublicStatus == paginationRequest.PublicStatusValue);
         }
+
+        products = products
+                    .Include(x => x.Categories)
+                    .ThenInclude(x => x.Category);
 
         if (!string.IsNullOrEmpty(paginationRequest.Categories))
         {
             var categories = paginationRequest.Categories.Split(",").ToList();
-            products = products.FindAll(p => p.Categories.Any(x => categories.Contains(x.Category.Name)));
+            products = products.Where(p => p.Categories.Any(x => categories.Contains(x.Category.Name)));
         }
 
-        var res = _mapper.Map<List<ProductDTO>>(products);
+        var res = _mapper.Map<List<ProductDTO>>(await products.ToListAsync());
         return new PaginationResponseDTO<ProductDTO>(paginationRequest, res);
     }
 

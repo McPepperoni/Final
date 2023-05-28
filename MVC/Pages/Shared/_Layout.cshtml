@@ -12,9 +12,7 @@
 </head>
 <body class="bg-light">
     @await Html.PartialAsync("_header.cshtml")
-    @* @await Html.PartialAsync("jumpbotron/_jumpbotron.cshtml") *@
-    <div class="d-flex pl-0 ml-0">
-        @await Html.PartialAsync("filter/_filter.cshtml")
+    <div class="pl-0 ml-0">
         <main role="main" class="pb-3 w-100">
             @RenderBody()
         </main>

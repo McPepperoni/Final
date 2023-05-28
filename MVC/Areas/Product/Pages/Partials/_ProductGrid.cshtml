@@ -1,0 +1,37 @@
+@using MVC.DTOs 
+
+@model List<ProductDTO>
+
+@{
+  var Data = new List<List<ProductDTO>>();
+  var col = 4;
+  
+  for (int i = 0; i < Model.Count(); i += col)
+  {
+    Data.Add(Model.Skip(i).Take(col).ToList());
+  }
+}
+
+<div class="mt-4">
+      @foreach (var row in Data)
+      {
+        <div class="row pt-3">
+              @foreach (var item in row)
+              {
+                <div class="col-sm h-100">
+                      <div class="card shadow-sm w-100 h-100">
+                        <img class="card-img-top" src="@item.ImgSrc" alt="Card image cap">
+                        <div class="card-body align-items-start d-flex flex-column h-100">
+                            <h5 class="card-title w-100">@item.Name</h5>
+                            <p class="card-text">@item.Price.ToString("N0") đ</p>
+                            <a href="#" class="btn btn-danger w-100">
+                                <i class="fa-solid fa-cart-plus"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+              }
+        </div>
+      }
+        
+</div>
