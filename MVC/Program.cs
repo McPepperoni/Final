@@ -1,4 +1,6 @@
+using Microsoft.AspNetCore.Identity;
 using MVC.Data;
+using MVC.Managers;
 using MVC.Models;
 using MVC.Settings;
 
@@ -9,13 +11,13 @@ builder.Services.AddSingleton<AppSettings>();
 builder.Services.AddDbContext<ApplicationDbContext>();
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 builder.Services.AddAutoMapper(typeof(Program));
+builder.Services.AddHttpClients();
 
-builder.Services.AddDefaultIdentity<UserEntity>(options =>
-{
-    options.User.RequireUniqueEmail = true;
-    options.SignIn.RequireConfirmedAccount = true;
-})
-    .AddEntityFrameworkStores<ApplicationDbContext>();
+builder.Services.AddDefaultIdentity<UserEntity>()
+.AddRoles<IdentityRole<Guid>>()
+.AddEntityFrameworkStores<ApplicationDbContext>()
+    .AddUserManager<FinalUserManager>()
+    .AddSignInManager<FinalSignInManager>();
 builder.Services.AddRazorPages();
 
 var app = builder.Build();
@@ -40,5 +42,7 @@ app.UseRouting();
 app.UseAuthorization();
 
 app.MapRazorPages();
+
+await ApplicationSeedData.EnsureData(app.Services);
 
 app.Run();

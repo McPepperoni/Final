@@ -9,20 +9,21 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using MVC.Managers;
 using MVC.Models;
 
 namespace MVC.Areas.Identity.Pages.Account
 {
     public class RegisterModel : PageModel
     {
-        private readonly SignInManager<UserEntity> _signInManager;
-        private readonly UserManager<UserEntity> _userManager;
+        private readonly FinalSignInManager _signInManager;
+        private readonly FinalUserManager _userManager;
         private readonly ILogger<RegisterModel> _logger;
         private readonly IMapper _mapper;
 
         public RegisterModel(
-            UserManager<UserEntity> userManager,
-            SignInManager<UserEntity> signInManager,
+            FinalUserManager userManager,
+            FinalSignInManager signInManager,
             ILogger<RegisterModel> logger,
             IMapper mapper
         )

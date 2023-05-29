@@ -22,11 +22,9 @@ public class IndexModel : PageModel
         public int MinPrice { get; set; }
         public int MaxPrice { get; set; }
     }
-    public IndexModel()
+    public IndexModel(IHttpClientFactory factory)
     {
-        _client = new HttpClient();
-
-        _client.BaseAddress = new Uri("http://localhost:5190/api/v1/");
+        _client = factory.CreateClient("ProductAPIClient");
     }
 
     public async Task OnGetAsync()
