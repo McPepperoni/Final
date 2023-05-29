@@ -1,46 +1,52 @@
-using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 using AutoMapper;
-using Microsoft.EntityFrameworkCore;
-using WebApi.Constants;
-using WebApi.Contexts;
+using Persistence;
+using Persistence.Entities;
+using Persistence.Managers;
 using WebApi.DTOs;
-using WebApi.Entities;
 using WebApi.Helpers.JWT;
 using WebApi.Middleware.ExceptionHandler;
 using WebApi.Services;
 using WebApi.Settings;
-
 public interface IAuthService
 {
-    Task<ResponseRequestTokenDTO> RequestToken(UserDTO user);
+    Task Register(AuthRegisterDTO authRegister);
+    Task Login(AuthLoginDTO authLogin);
 }
 
-public class AuthService : BaseService<CartEntity>, IAuthService
+public class AuthService : BaseService<UserEntity>, IAuthService
 {
     private readonly JWTHelper _jwtHelper;
     private readonly AppSettings _appSettings;
-    public AuthService(ApplicationDbContext dbContext, JWTHelper jwtHelper, IMapper mapper, AppSettings appSettings) : base(dbContext, mapper)
+    private readonly FinalUserManager _userManager;
+    private readonly FinalSignInManager _signInManager;
+    public AuthService(ApplicationDbContext dbContext, JWTHelper jwtHelper, IMapper mapper, AppSettings appSettings, FinalUserManager userManager, FinalSignInManager signInManager) : base(dbContext, mapper)
     {
         _jwtHelper = jwtHelper;
         _appSettings = appSettings;
+        _userManager = userManager;
+        _signInManager = signInManager;
     }
 
-    public async Task<ResponseRequestTokenDTO> RequestToken(UserDTO user)
+    public async Task Register(AuthRegisterDTO authRegister)
     {
-        var cart = await _dbSet.Where(x => x.UserId == user.Id).FirstOrDefaultAsync();
+        var user = _mapper.Map<UserEntity>(authRegister);
 
-        if (cart == null)
+        var result = await _userManager.CreateAsync(user, authRegister.Password);
+
+        if (!result.Succeeded)
         {
-            throw new AppException(HttpStatusCode.NotFound, "This user has not been registered");
+            throw new AppException(HttpStatusCode.BadRequest, "Registered failed with messages");
         }
+    }
 
-        var token = _jwtHelper.Create(user, DateTime.UtcNow.AddMinutes(15));
+    public async Task Login(AuthLoginDTO authLogin)
+    {
+        var result = await _signInManager.SignInWithEmailPasswordAsync(authLogin.Email, authLogin.Password, true);
 
-        return new()
+        if (!result.Succeeded)
         {
-            AccessToken = token.Token,
-            User = user
-        };
+            throw new AppException(HttpStatusCode.BadRequest, "Logged In failed with messages");
+        }
     }
 }

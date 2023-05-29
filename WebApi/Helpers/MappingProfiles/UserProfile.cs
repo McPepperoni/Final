@@ -4,10 +4,10 @@ using WebApi.DTOs;
 
 namespace WebApi.Helpers.MappingProfiles;
 
-public class CartProfile : Profile
+public class UserProfile : Profile
 {
-    public CartProfile()
+    public UserProfile()
     {
-        CreateMap<CartEntity, CartDTO>();
+        CreateMap<AuthRegisterDTO, UserEntity>();
     }
 }

@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;
-using WebApi.Contexts;
+using Persistence.Services;
 using WebApi.Helpers.DataSeeding;
 using WebApi.Middleware.ExceptionHandler;
 using WebApi.Settings;
@@ -13,7 +13,8 @@ using WebApi.Settings;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddSingleton<AppSettings>();
-builder.Services.AddDbContext<DbContext, ApplicationDbContext>();
+builder.Services.AddInfrastructure(builder.Configuration);
+builder.Services.AddIdentities();
 builder.Services.AddHelpers(builder.Environment);
 builder.Services.AddServices();
 if (!builder.Environment.IsEnvironment("Test"))

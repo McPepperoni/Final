@@ -1,17 +1,62 @@
 using System.Runtime.CompilerServices;
+using AutoMapper;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.OpenApi.Writers;
 using Newtonsoft.Json;
-using WebApi.Contexts;
-using WebApi.Entities;
+using Persistence;
+using Persistence.Entities;
+using Persistence.Managers;
 
 namespace WebApi.Helpers.DataSeeding;
 
 public class ApplicationSeedData
 {
+    public class UserSeedDTO
+    {
+        public Guid Id { get; set; }
+        public string Email { get; set; }
+        public string Password { get; set; }
+        public string FullName { get; set; }
+        public string PhoneNumber { get; set; }
+        public string Address { get; set; }
+        public string Role { get; set; }
+    }
+
     public async static Task EnsureDataAsync(IServiceProvider services)
     {
         using var scope = services.CreateScope();
         var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
+        if (!dbContext.Roles.Any())
+        {
+            var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole<Guid>>>();
+            var roles = GetJson<IdentityRole<Guid>>(@"Db/RoleData.json");
+
+            foreach (var role in roles)
+            {
+                await roleManager.CreateAsync(new IdentityRole<Guid>(role.Name));
+            }
+        }
+
+        if (!dbContext.Users.Any())
+        {
+            var userManager = scope.ServiceProvider.GetRequiredService<FinalUserManager>();
+
+            var users = GetJson<UserSeedDTO>(@"Db/UserData.json");
+
+            var mapperConfig = new MapperConfiguration(x =>
+            {
+                x.CreateMap<UserSeedDTO, UserEntity>();
+            });
+            var mapper = new Mapper(mapperConfig);
+
+            foreach (var user in users)
+            {
+                var mappedUser = mapper.Map<UserEntity>(user);
+                var result = await userManager.CreateAsync(mappedUser, user.Password);
+                result = await userManager.AddToRoleAsync(mappedUser, user.Role);
+            }
+        }
 
         if (!dbContext.Products.Any())
         {
@@ -41,8 +86,9 @@ public class ApplicationSeedData
                 await dbContext.Products.AddAsync(item);
             }
 
-            await dbContext.SaveChangesAsync();
         }
+
+        await dbContext.SaveChangesAsync();
     }
 
     private static List<T> GetJson<T>(string path)

@@ -1,10 +1,9 @@
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
-using MVC.DTOs;
 using Persistence.Entities;
 
-namespace MVC.Managers;
+namespace Persistence.Managers;
 
 public class FinalSignInManager : SignInManager<UserEntity>
 {
@@ -22,13 +21,6 @@ public class FinalSignInManager : SignInManager<UserEntity>
         {
             return SignInResult.Failed;
         }
-        var roles = await UserManager.GetRolesAsync(user);
-
-        var payload = new GetTokenDTO()
-        {
-            Id = user.Id.ToString(),
-            Roles = roles.ToList()
-        };
 
         return await base.PasswordSignInAsync(user, password, isPersistent, false);
     }

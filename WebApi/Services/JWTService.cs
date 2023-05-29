@@ -2,9 +2,12 @@ namespace WebApi.Services;
 
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
-using WebApi.Contexts;
-using WebApi.Entities;
+using Persistence;
+using Persistence.Entities;
+
 using WebApi.Helpers.JWT;
+
+
 
 public interface IJWTService
 {

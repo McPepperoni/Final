@@ -4,9 +4,9 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
+using Persistence.Entities;
 using WebApi.Constants;
 using WebApi.DTOs;
-using WebApi.Entities;
 using WebApi.Settings;
 
 public class JWTHelper

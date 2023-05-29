@@ -1,16 +1,13 @@
 using Microsoft.AspNetCore.Identity;
 using MVC.Data;
-using MVC.Managers;
 using MVC.Settings;
 using Persistence;
 using Persistence.Entities;
-using Persistence.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddSingleton<AppSettings>();
-builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 builder.Services.AddAutoMapper(typeof(Program));
 builder.Services.AddHttpClients();

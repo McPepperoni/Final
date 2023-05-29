@@ -4,7 +4,7 @@ using Microsoft.Extensions.Options;
 using Persistence;
 using Persistence.Entities;
 
-namespace MVC.Managers;
+namespace Persistence.Managers;
 
 public class FinalUserManager : UserManager<UserEntity>
 {

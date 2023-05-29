@@ -21,9 +21,22 @@ public class AuthController : BaseController
     }
 
     [AllowAnonymous]
-    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ResponseRequestTokenDTO))]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [HttpPost("Token")]
-    public async Task<IActionResult> Token(UserDTO user)
-    => Ok(await _authService.RequestToken(user));
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [HttpPost("Register")]
+    public async Task<IActionResult> Register(AuthRegisterDTO authRegister)
+    {
+        await _authService.Register(authRegister);
+        return NoContent();
+    }
+
+    [AllowAnonymous]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [HttpPost("Login")]
+    public async Task<IActionResult> Login(AuthLoginDTO authLogin)
+    {
+        await _authService.Login(authLogin);
+        return NoContent();
+    }
 }

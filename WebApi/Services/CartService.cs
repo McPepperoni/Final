@@ -1,9 +1,9 @@
 using System.Net;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
-using WebApi.Contexts;
+using Persistence;
+using Persistence.Entities;
 using WebApi.DTOs;
-using WebApi.Entities;
 using WebApi.Middleware.ExceptionHandler;
 
 namespace WebApi.Services;
@@ -23,32 +23,13 @@ public class CartService : BaseService<CartEntity>, ICartService
 
     public async Task<CartDTO> Create(string userId)
     {
-        var cart = await _dbSet.Where(x => x.UserId == userId).FirstOrDefaultAsync();
-        if (cart != null)
-        {
-            throw new AppException(HttpStatusCode.Conflict, "Cart associated with this user has already exist");
-        }
+        throw new NotImplementedException();
 
-        cart = new()
-        {
-            UserId = userId,
-        };
-
-        await _dbSet.AddAsync(cart);
-
-        await _dbContext.SaveChangesAsync();
-
-        return _mapper.Map<CartDTO>(cart);
     }
 
     public async Task<CartDTO> Get(string userId)
     {
-        var cart = await _dbSet.Where(x => x.UserId == userId).Include(x => x.CartProducts).ThenInclude(x => x.Product).FirstOrDefaultAsync();
-        if (cart != null)
-        {
-            throw new AppException(HttpStatusCode.NotFound, "No cart associated with this user");
-        }
-
-        return _mapper.Map<CartDTO>(cart);
+        throw new NotImplementedException();
     }
 }
+ 

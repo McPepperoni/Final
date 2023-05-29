@@ -24,6 +24,11 @@ public class ApplicationDbContext : IdentityDbContext<UserEntity, IdentityRole<G
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
+        builder.Entity<UserEntity>()
+        .HasOne(x => x.Cart)
+        .WithOne()
+        .HasForeignKey<CartEntity>();
+
         // Category
         builder.Entity<CategoryEntity>()
         .ToTable("Categories");
@@ -69,6 +74,10 @@ public class ApplicationDbContext : IdentityDbContext<UserEntity, IdentityRole<G
         .HasMany(x => x.OrderProducts)
         .WithOne()
         .OnDelete(DeleteBehavior.Cascade);
+
+        builder.Entity<OrderEntity>()
+        .HasOne(x => x.User)
+        .WithMany();
 
         // Order Product
         builder.Entity<OrderProductEntity>()

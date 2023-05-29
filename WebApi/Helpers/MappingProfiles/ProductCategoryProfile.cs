@@ -1,6 +1,6 @@
 using AutoMapper;
+using Persistence.Entities;
 using WebApi.DTOs;
-using WebApi.Entities;
 
 namespace WebApi.Helpers.MappingProfiles;
 

@@ -1,8 +1,8 @@
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
-using WebApi.Contexts;
+using Persistence;
+using Persistence.Entities;
 using WebApi.DTOs;
-using WebApi.Entities;
 using WebApi.Services;
 
 public interface IProductService
