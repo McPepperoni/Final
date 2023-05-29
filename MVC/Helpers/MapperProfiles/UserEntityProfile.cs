@@ -1,6 +1,6 @@
 using AutoMapper;
 using MVC.Areas.Identity.Pages.Account;
-using MVC.Models;
+using Persistence.Entities;
 
 namespace MVC.Helpers.MapperProfiles;
 

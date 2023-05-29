@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
-using MVC.Data;
-using MVC.Models;
+using Persistence;
+using Persistence.Entities;
 
 namespace MVC.Managers;
 

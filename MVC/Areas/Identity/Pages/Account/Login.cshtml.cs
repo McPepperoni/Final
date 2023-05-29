@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using MVC.Managers;
-using MVC.Models;
 
 namespace MVC.Areas.Identity.Pages.Account
 {

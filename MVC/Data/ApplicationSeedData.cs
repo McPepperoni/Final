@@ -1,10 +1,10 @@
 using AutoMapper;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using MVC.Data;
 using MVC.Managers;
-using MVC.Models;
 using Newtonsoft.Json;
+
+using Persistence;
+using Persistence.Entities;
 
 namespace MVC.Data;
 

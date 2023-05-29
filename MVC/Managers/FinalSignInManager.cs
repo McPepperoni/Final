@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using MVC.DTOs;
-using MVC.Models;
+using Persistence.Entities;
 
 namespace MVC.Managers;
 
