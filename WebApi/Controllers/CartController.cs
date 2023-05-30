@@ -10,13 +10,13 @@ public class CartController : BaseController
 
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(CartDTO))]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [HttpGet("cart")]
+    [HttpGet]
     public async Task<IActionResult> Get([FromQuery] UserCartDTO cart)
     => Ok(await _cartService.Get(cart.UserId));
 
     [ProducesResponseType(StatusCodes.Status409Conflict)]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(CartDTO))]
-    [HttpPost("cart")]
+    [HttpPost]
     public async Task<IActionResult> Create([FromQuery] UserCartDTO cart)
     => Ok(await _cartService.Get(cart.UserId));
 }

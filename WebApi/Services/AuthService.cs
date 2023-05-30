@@ -1,5 +1,7 @@
 using System.Net;
+using System.Security.Claims;
 using AutoMapper;
+using Microsoft.AspNetCore.Identity;
 using Persistence;
 using Persistence.Entities;
 using Persistence.Managers;
@@ -11,7 +13,8 @@ using WebApi.Settings;
 public interface IAuthService
 {
     Task Register(AuthRegisterDTO authRegister);
-    Task Login(AuthLoginDTO authLogin);
+    Task<JWTTokenEntity> Login(AuthLoginDTO authLogin);
+    Task Logout();
 }
 
 public class AuthService : BaseService<UserEntity>, IAuthService
@@ -40,13 +43,22 @@ public class AuthService : BaseService<UserEntity>, IAuthService
         }
     }
 
-    public async Task Login(AuthLoginDTO authLogin)
+    public async Task<JWTTokenEntity> Login(AuthLoginDTO authLogin)
     {
         var result = await _signInManager.SignInWithEmailPasswordAsync(authLogin.Email, authLogin.Password, true);
 
         if (!result.Succeeded)
         {
-            throw new AppException(HttpStatusCode.BadRequest, "Logged In failed with messages");
+            throw new AppException(HttpStatusCode.BadRequest);
         }
+
+        var token = await _jwtHelper.Create(await _userManager.FindByEmailAsync(authLogin.Email), DateTime.UtcNow.AddHours(1));
+
+        return token;
+    }
+
+    public async Task Logout()
+    {
+        await _signInManager.SignOutAsync();
     }
 }

@@ -18,16 +18,19 @@
             </button>
             <div class="navbar-collapse collapse d-sm-inline-flex justify-content-end">
                 <ul class="navbar-nav navbar-dark text-light">
+                    @if(!User.Identity.IsAuthenticated){
                     <li class="nav-item">
                         <a class="nav-link" asp-area="Identity" asp-page="/Account/Login">
                             <h5><i class="fa-solid fa-user-plus"></i></h5>
                         </a>
                     </li>
+                    }else {
                     <li class="nav-item">
                         <a class="nav-link d-flex" asp-area="" asp-controller="Home" asp-action="Privacy">
                             <span class="">User name</span> <h5><i class="fa-solid fa-user"></i></h5>
                         </a>
                     </li>
+                    }
                 </ul>
             </div>
         </div>

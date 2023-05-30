@@ -5,36 +5,36 @@ using System.Security.Claims;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
 using Persistence.Entities;
+using Persistence.Managers;
 using WebApi.Constants;
-using WebApi.DTOs;
 using WebApi.Settings;
 
 public class JWTHelper
 {
     private readonly AppSettings _settings;
+    private readonly FinalUserManager _userManager;
 
-    public JWTHelper(AppSettings settings)
+    public JWTHelper(AppSettings settings, FinalUserManager userManager)
     {
         _settings = settings;
+        _userManager = userManager;
     }
 
-    public JWTTokenEntity Create(UserDTO user, DateTime expiredAt, TokenName name = TokenName.AuthToken)
+    public async Task<JWTTokenEntity> Create(UserEntity user, DateTime expiredAt, TokenName name = TokenName.AuthToken)
     {
         var tokenHandler = new JwtSecurityTokenHandler();
         var key = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_settings.JWT.Key));
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
-        var claims = new List<Claim>()
-        {
-            new Claim(JwtRegisteredClaimNames.Name, name.ToString()),
-            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-            new Claim(JwtRegisteredClaimNames.Sub, user.Id),
-        };
+        var roles = await _userManager.GetRolesAsync(user);
 
-        foreach (var item in user.Roles)
+        var claims = new List<Claim>
         {
-            claims.Add(new Claim("Role", item));
-        }
+            new Claim("Role", roles[0]),
+            new Claim(JwtRegisteredClaimNames.Email, user.Email),
+            new Claim("FullName", user.FullName),
+            new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
+        };
 
         var token = new JwtSecurityToken(
             _settings.JWT.Issuer,
@@ -45,7 +45,7 @@ public class JWTHelper
             creds
         );
 
-        return new()
+        return new JWTTokenEntity()
         {
             Token = tokenHandler.WriteToken(token),
             Expires = expiredAt,

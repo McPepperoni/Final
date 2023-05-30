@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using MVC.DTOs;
@@ -9,6 +10,7 @@ public class Query
     public int CurrentPage { get; set; }
 }
 
+[Authorize]
 public class IndexModel : PageModel
 {
     private readonly HttpClient _client;
@@ -31,6 +33,7 @@ public class IndexModel : PageModel
     {
         var response = await _client.GetAsync($"Products?Page={CurrentPage - 1}");
         Data = await response.Content.ReadFromJsonAsync<PaginationResponseDTO<ProductDTO, ProductPaginationRequestDTO>>();
+
     }
 
     public IActionResult OnGetNextPage()

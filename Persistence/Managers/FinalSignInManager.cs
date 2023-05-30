@@ -21,7 +21,6 @@ public class FinalSignInManager : SignInManager<UserEntity>
         {
             return SignInResult.Failed;
         }
-
         return await base.PasswordSignInAsync(user, password, isPersistent, false);
     }
 }

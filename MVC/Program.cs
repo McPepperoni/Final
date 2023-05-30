@@ -1,13 +1,16 @@
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
-using MVC.Data;
 using MVC.Settings;
 using Persistence;
 using Persistence.Entities;
+using Persistence.Managers;
+using Persistence.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddSingleton<AppSettings>();
+builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 builder.Services.AddAutoMapper(typeof(Program));
 builder.Services.AddHttpClients();
@@ -15,9 +18,17 @@ builder.Services.AddHttpClients();
 builder.Services.AddDefaultIdentity<UserEntity>()
 .AddRoles<IdentityRole<Guid>>()
 .AddEntityFrameworkStores<ApplicationDbContext>()
-    .AddUserManager<FinalUserManager>()
-    .AddSignInManager<FinalSignInManager>();
+.AddUserManager<FinalUserManager>()
+.AddSignInManager<FinalSignInManager>();
+
 builder.Services.AddRazorPages();
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.ExpireTimeSpan = TimeSpan.FromMinutes(20);
+        options.SlidingExpiration = true;
+        options.AccessDeniedPath = "/Forbidden/";
+    });
 
 var app = builder.Build();
 
@@ -38,10 +49,9 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapRazorPages();
-
-await ApplicationSeedData.EnsureData(app.Services);
 
 app.Run();

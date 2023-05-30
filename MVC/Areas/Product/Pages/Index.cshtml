@@ -1,12 +1,21 @@
 @page
 @using MVC.Areas.Product
 @model IndexModel
+@inject Persistence.Managers.FinalSignInManager SignInManager
+
+@{
+    var authen = SignInManager.Context.User.Identity.IsAuthenticated;
+    @* this.User.Identity.IsAuthenticated *@
+}
 
 <div class="d-flex">
-    @await Html.PartialAsync("Partials/_filter.cshtml", Model.Data.Data)
-    <div class="w-100 container d-flex flex-column align-items-center">
-    @await Html.PartialAsync("Partials/_searchbar.cshtml", Model.Data.Data)
-        @await Html.PartialAsync("Partials/_ProductGrid.cshtml", Model.Data.Data)
-        @await Html.PartialAsync("Partials/_pagination.cshtml", Model.Data.PageData)
-    </div>
+    @if(User.Identity.IsAuthenticated){
+         @await Html.PartialAsync("Partials/_filter.cshtml", Model.Data.Data)
+        <div class="w-100 container d-flex flex-column align-items-center">
+            @await Html.PartialAsync("Partials/_searchbar.cshtml", Model.Data.Data)
+            @await Html.PartialAsync("Partials/_ProductGrid.cshtml", Model.Data.Data)
+            @await Html.PartialAsync("Partials/_pagination.cshtml", Model.Data.PageData)
+        </div>
+    }
+   
 </div>

@@ -7,8 +7,8 @@ using AutoMapper;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using MVC.Managers;
 using Persistence.Entities;
+using Persistence.Managers;
 
 namespace MVC.Areas.Identity.Pages.Account
 {

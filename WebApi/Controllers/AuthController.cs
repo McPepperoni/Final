@@ -1,5 +1,7 @@
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Persistence.Entities;
 using WebApi.DTOs;
 using WebApi.Helpers.JWT;
 using WebApi.Services;
@@ -31,12 +33,9 @@ public class AuthController : BaseController
     }
 
     [AllowAnonymous]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(JWTTokenEntity))]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [HttpPost("Login")]
     public async Task<IActionResult> Login(AuthLoginDTO authLogin)
-    {
-        await _authService.Login(authLogin);
-        return NoContent();
-    }
+        => Ok(await _authService.Login(authLogin));
 }
