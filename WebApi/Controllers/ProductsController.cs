@@ -13,9 +13,10 @@ public class ProductsController : BaseController
         _productService = productService;
     }
 
-    [Authorize]
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(PaginationResponseDTO<ProductDTO>))]
     public async Task<IActionResult> Get([FromQuery] ProductPaginationRequestDTO paginationRequest)
     => Ok(await _productService.Get(paginationRequest));
+
+
 }

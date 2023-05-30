@@ -11,7 +11,7 @@ public class Query
     public int CurrentPage { get; set; }
 }
 
-[Authorize]
+[Authorize(Roles = "User")]
 public class IndexModel : PageModel
 {
     private readonly HttpClient _client;

@@ -29,15 +29,7 @@ public class ExceptionHandlerMiddleware
                 case AppException e:
                     response.StatusCode = (int)e.StatusCode;
                     break;
-                case KeyNotFoundException:
-                    response.StatusCode = (int)HttpStatusCode.NotFound;
-                    break;
-                case NullReferenceException:
-                    response.StatusCode = (int)HttpStatusCode.BadRequest;
-                    break;
-                case UnauthorizedAccessException:
-                    response.StatusCode = (int)HttpStatusCode.Unauthorized;
-                    break;
+
                 default:
                     response.StatusCode = (int)HttpStatusCode.InternalServerError;
                     _logger.LogError(ex, "An exception has occur.");

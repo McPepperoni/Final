@@ -23,8 +23,7 @@ namespace MVC.Areas.Identity.Pages.Account
 
         public async Task<IActionResult> OnGetAsync()
         {
-            await HttpContext.SignOutAsync();
-            HttpContext.Response.Clear();
+            await HttpContext.SignOutAsync("Cookies");
 
             return Redirect("/");
         }

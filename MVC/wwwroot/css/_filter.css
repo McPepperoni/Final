@@ -67,6 +67,7 @@
 .header-panel {
   right: 0;
   top: 20%;
+  display: none;
 }
 
 .dropdown-title:hover .header-panel {

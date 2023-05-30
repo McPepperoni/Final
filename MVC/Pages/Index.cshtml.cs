@@ -18,8 +18,4 @@ public class IndexModel : PageModel
         return User.Identity.IsAuthenticated ? Redirect("Product") : Redirect("Identity/Account/Login");
     }
 
-    public async Task OnPostSignOut()
-    {
-        await HttpContext.SignOutAsync();
-    }
 }

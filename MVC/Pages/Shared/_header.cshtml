@@ -1,5 +1,7 @@
 @using Microsoft.AspNetCore.Identity
 @using Persistence.Entities
+@using System.Security.Claims
+
 @inject SignInManager<UserEntity> _signInManager
 @inject UserManager<UserEntity> UserManager
 
@@ -18,35 +20,41 @@
             </button>
             <div class="navbar-collapse collapse d-sm-inline-flex justify-content-end">
                 <ul class="navbar-nav navbar-dark text-light">
-                    @if(!User.Identity.IsAuthenticated){
-                    <li class="nav-item">
-                        <a class="nav-link" asp-area="Identity" asp-page="/Account/Login">
-                            <h5><i class="fa-solid fa-user-plus"></i></h5>
-                        </a>
-                    </li>
-                    }else {
-                    <li class="nav-item">
-                        <a class="nav-link d-flex p-relative text-light mr-5 dropdown-title" asp-area="" asp-controller="Home" asp-action="Privacy">
-                            <h6 class="mr-2">User name</h6> 
-                            <h5>
-                                <i class="fa-solid fa-user"></i>
-                            </h5>
-                            <ul class="list-group p-absolute header-panel bg-white">
-                                <li class="list-group-item dropdown-header d-flex w-100">
-                                    <h6 class="mr-2">User name</h6>
-                                    <h5>
-                                        <i class="fa-solid fa-user"></i>
-                                    </h5>
-                                </li>
-                                <li class="list-group-item dropdown-item">
+                    @if (!User.Identity.IsAuthenticated)
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="Identity" asp-page="/Account/Login">
+                                <h5><i class="fa-solid fa-user-plus"></i></h5>
+                            </a>
+                        </li>
+                    }
+                    else
+                    {
+                        <li class="nav-item dropdown-title">
+                            <a class="nav-link d-flex p-relative text-light mr-5" asp-area="" asp-controller="Home" asp-action="Privacy">
+                                <h6 class="mr-2">@(User.Claims.Where(x => x.Type == "fullName").FirstOrDefault().Value)</h6> 
+                                <h5>
+                                    <i class="fa-solid fa-user"></i>
+                                </h5>
+                                <ul class="list-group p-absolute header-panel bg-white">
+                                    <li class="list-group-item dropdown-header d-flex w-100">
+                                        <h6 class="mr-2">@(User.Claims.Where(x => x.Type == "fullName").FirstOrDefault().Value)</h6>
+                                        <h5>
+                                            <i class="fa-solid fa-user"></i>
+                                        </h5>
+                                    </li>
+                                    <li class="list-group-item dropdown-item">
+                                        @await Html.PartialAsync("Cart/_cart.cshtml")
+                                    </li>
+                                    <li class="list-group-item dropdown-item">
                                         <a  asp-controller="Home" asp-action="Privacy">Edit</a>
-                                </li>
-                                <li class="list-group-item dropdown-item">
+                                    </li>
+                                    <li class="list-group-item dropdown-item">
                                         <a asp-area="Identity" asp-page="/Account/Logout">Log Out</a>
-                                </li>
-                            </ul>
-                        </a>
-                    </li>
+                                    </li>
+                                </ul>
+                            </a>
+                        </li>
                     }
                 </ul>
             </div>
