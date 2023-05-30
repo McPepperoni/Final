@@ -1,3 +1,4 @@
+using System.Net.Http.Headers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -31,9 +32,13 @@ public class IndexModel : PageModel
 
     public async Task OnGetAsync()
     {
+        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", User.Claims.Where(x => x.Type == "JWT").FirstOrDefault().Value);
+
+        Console.WriteLine(User.IsInRole("User"));
+
+
         var response = await _client.GetAsync($"Products?Page={CurrentPage - 1}");
         Data = await response.Content.ReadFromJsonAsync<PaginationResponseDTO<ProductDTO, ProductPaginationRequestDTO>>();
-
     }
 
     public IActionResult OnGetNextPage()

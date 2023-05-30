@@ -30,11 +30,15 @@ public class JWTHelper
 
         var claims = new List<Claim>
         {
-            new Claim("Role", roles[0]),
             new Claim(JwtRegisteredClaimNames.Email, user.Email),
-            new Claim("FullName", user.FullName),
+            new Claim("fullName", user.FullName),
             new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
         };
+
+        foreach (var role in roles)
+        {
+            claims.Add(new Claim("roles", role));
+        }
 
         var token = new JwtSecurityToken(
             _settings.JWT.Issuer,

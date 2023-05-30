@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 #nullable disable
 
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -20,9 +21,22 @@ namespace MVC.Areas.Identity.Pages.Account
             _logger = logger;
         }
 
+        public async Task<IActionResult> OnGetAsync()
+        {
+            await HttpContext.SignOutAsync();
+            HttpContext.Response.Clear();
+
+            return Redirect("/");
+        }
+
         public async Task<IActionResult> OnPost(string returnUrl = null)
         {
-            await _signInManager.SignOutAsync();
+            await HttpContext.SignOutAsync();
+            var cookie = HttpContext.Request.Cookies["Cookies"];
+            if (cookie != null)
+            {
+
+            }
             _logger.LogInformation("User logged out.");
             if (returnUrl != null)
             {

@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WebApi.DTOs;
 
@@ -12,6 +13,7 @@ public class ProductsController : BaseController
         _productService = productService;
     }
 
+    [Authorize]
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(PaginationResponseDTO<ProductDTO>))]
     public async Task<IActionResult> Get([FromQuery] ProductPaginationRequestDTO paginationRequest)

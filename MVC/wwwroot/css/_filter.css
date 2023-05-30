@@ -15,6 +15,18 @@
 .ml-2 {
   margin-left: 1rem;
 }
+.mr-2 {
+  margin-right: 1rem;
+}
+.mr-3 {
+  margin-right: 1.5rem;
+}
+.mr-4 {
+  margin-right: 2rem;
+}
+.mr-5 {
+  margin-right: 2.5rem;
+}
 
 .filter-submit {
   width: 100%;
@@ -38,4 +50,26 @@
 
 .flex-grow-none {
   flex-grow: 0;
+}
+
+.bg-inherit {
+  background-color: inherit;
+}
+
+.p-relative {
+  position: relative !important;
+}
+
+.p-absolute {
+  position: absolute !important;
+}
+
+.header-panel {
+  right: 0;
+  top: 20%;
+}
+
+.dropdown-title:hover .header-panel {
+  display: flex;
+  flex-direction: column;
 }

@@ -91,7 +91,8 @@ namespace MVC.Areas.Identity.Pages.Account
 
                     var token = handler.ReadJwtToken(content.Token);
 
-                    var claims = ((JwtSecurityToken)token).Claims;
+                    var claims = ((JwtSecurityToken)token).Claims.ToList();
+                    claims.Add(new Claim("JWT", content.Token));
 
                     var claimsIdentity = new ClaimsIdentity(
                         claims, CookieAuthenticationDefaults.AuthenticationScheme);
@@ -118,5 +119,13 @@ namespace MVC.Areas.Identity.Pages.Account
             // If we got this far, something failed, redisplay form
             return Page();
         }
+
+        public async Task<IActionResult> OnGetSignOutAsync()
+        {
+            await HttpContext.SignOutAsync();
+
+            return Redirect("/");
+        }
     }
+
 }
