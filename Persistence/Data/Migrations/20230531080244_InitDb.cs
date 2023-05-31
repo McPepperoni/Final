@@ -3,10 +3,10 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace Persistance.Data.Migrations
+namespace Persistence.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class Init : Migration
+    public partial class InitDb : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -280,7 +280,7 @@ namespace Persistance.Data.Migrations
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Quantity = table.Column<int>(type: "int", nullable: false),
                     ProductId = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    CartEntityId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    CartId = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
                     ModifiedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
@@ -288,8 +288,8 @@ namespace Persistance.Data.Migrations
                 {
                     table.PrimaryKey("PK_CartProducts", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_CartProducts_Carts_CartEntityId",
-                        column: x => x.CartEntityId,
+                        name: "FK_CartProducts_Carts_CartId",
+                        column: x => x.CartId,
                         principalTable: "Carts",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -368,9 +368,9 @@ namespace Persistance.Data.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "IX_CartProducts_CartEntityId",
+                name: "IX_CartProducts_CartId",
                 table: "CartProducts",
-                column: "CartEntityId");
+                column: "CartId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_CartProducts_ProductId",

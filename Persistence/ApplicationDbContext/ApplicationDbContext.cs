@@ -65,7 +65,7 @@ public class ApplicationDbContext : IdentityDbContext<UserEntity, IdentityRole<G
         builder.Entity<CartEntity>()
         .ToTable("Carts")
         .HasMany(x => x.CartProducts)
-        .WithOne()
+        .WithOne(x => x.Cart)
         .OnDelete(DeleteBehavior.Cascade);
 
         // Order

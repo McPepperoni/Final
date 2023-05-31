@@ -14,6 +14,7 @@ public interface ICartService
     Task Create(string userId);
     Task<CartDTO> Get(string userId);
     Task<CartDTO> Update(UpdateCartDTO updateCart);
+    Task<CartDTO> Delete(string itemId);
 }
 
 public class CartService : BaseService<CartEntity>, ICartService
@@ -34,10 +35,12 @@ public class CartService : BaseService<CartEntity>, ICartService
 
         if (user.Cart != null)
         {
-            throw new AppException(HttpStatusCode.Conflict, "User already has cart");
+            throw new AppException(HttpStatusCode.Conflict, String.Format(ErrorMessages.CONFLICTED_ERROR, "Cart", "UserId", userId));
         }
 
         user.Cart = new CartEntity() { };
+
+        await _dbContext.SaveChangesAsync();
     }
 
     public async Task<CartDTO> Get(string userId)
@@ -51,7 +54,7 @@ public class CartService : BaseService<CartEntity>, ICartService
 
         if (user.Cart == null)
         {
-            throw new AppException(HttpStatusCode.Conflict, "User does not has cart");
+            throw new AppException(HttpStatusCode.NotFound, String.Format(ErrorMessages.NOT_FOUND_ERROR, "Cart", "UserId", userId));
         }
 
         return _mapper.Map<CartDTO>(user.Cart);
@@ -88,5 +91,20 @@ public class CartService : BaseService<CartEntity>, ICartService
         }
 
         return _mapper.Map<CartDTO>(cart);
+    }
+
+    public async Task<CartDTO> Delete(string itemId)
+    {
+        var cartItem = await _cartProductDbSet.FindAsync(itemId);
+
+        if (cartItem == null)
+        {
+            throw new AppException(HttpStatusCode.NotFound, String.Format(ErrorMessages.NOT_FOUND_ERROR, "Cart Item", "Id", itemId));
+        }
+        var cart = cartItem.Cart;
+
+        _cartProductDbSet.Remove(cartItem);
+
+        return _mapper.Map<CartEntity, CartDTO>(cart);
     }
 }

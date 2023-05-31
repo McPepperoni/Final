@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WebApi.DTOs;
 
@@ -18,5 +17,28 @@ public class ProductsController : BaseController
     public async Task<IActionResult> Get([FromQuery] ProductPaginationRequestDTO paginationRequest)
     => Ok(await _productService.Get(paginationRequest));
 
+    [HttpGet("{id:length(36)}")]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ProductDTO))]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> Get(string id)
+    => Ok(await _productService.Get(id));
 
+    [HttpPost]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ProductDTO))]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> Create([FromBody] ProductCreateDTO productCreate)
+    => Ok(await _productService.Create(productCreate));
+
+    [HttpPut]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ProductDTO))]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> Update([FromQuery] string id, [FromBody] ProductUpdateDTO productUpdate)
+    => Ok(await _productService.Update(id, productUpdate));
+
+    [HttpDelete]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ProductDTO))]
+    public async Task<IActionResult> Delete(string id)
+    => Ok(await _productService.Delete(id));
 }

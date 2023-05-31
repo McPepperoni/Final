@@ -71,4 +71,10 @@ public class JWTHelper
 
         return (JwtSecurityToken)validationResult.SecurityToken;
     }
+
+    public JwtSecurityToken ReadToken(string token)
+    {
+        var tokenHandler = new JwtSecurityTokenHandler();
+        return tokenHandler.ReadJwtToken(token);
+    }
 }

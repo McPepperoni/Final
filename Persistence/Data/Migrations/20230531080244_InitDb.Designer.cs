@@ -9,11 +9,11 @@ using Persistence;
 
 #nullable disable
 
-namespace Persistance.Data.Migrations
+namespace Persistence.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230529155610_Init")]
-    partial class Init
+    [Migration("20230531080244_InitDb")]
+    partial class InitDb
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -186,7 +186,7 @@ namespace Persistance.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("CartEntityId")
+                    b.Property<string>("CartId")
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTime?>("CreatedAt")
@@ -203,7 +203,7 @@ namespace Persistance.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CartEntityId");
+                    b.HasIndex("CartId");
 
                     b.HasIndex("ProductId");
 
@@ -505,15 +505,17 @@ namespace Persistance.Data.Migrations
 
             modelBuilder.Entity("Persistence.Entities.CartProductEntity", b =>
                 {
-                    b.HasOne("Persistence.Entities.CartEntity", null)
+                    b.HasOne("Persistence.Entities.CartEntity", "Cart")
                         .WithMany("CartProducts")
-                        .HasForeignKey("CartEntityId")
+                        .HasForeignKey("CartId")
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("Persistence.Entities.ProductEntity", "Product")
                         .WithMany()
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade);
+
+                    b.Navigation("Cart");
 
                     b.Navigation("Product");
                 });

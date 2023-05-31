@@ -27,26 +27,5 @@ namespace MVC.Areas.Identity.Pages.Account
 
             return Redirect("/");
         }
-
-        public async Task<IActionResult> OnPost(string returnUrl = null)
-        {
-            await HttpContext.SignOutAsync();
-            var cookie = HttpContext.Request.Cookies["Cookies"];
-            if (cookie != null)
-            {
-
-            }
-            _logger.LogInformation("User logged out.");
-            if (returnUrl != null)
-            {
-                return LocalRedirect(returnUrl);
-            }
-            else
-            {
-                // This needs to be a redirect so that the browser performs a new
-                // request and the identity for the user gets updated.
-                return RedirectToPage();
-            }
-        }
     }
 }

@@ -12,5 +12,7 @@ public class ProductProfile : Profile
         .IncludeMembers(x => x.Categories);
 
         CreateMap<ProductEntity, ProductCategoryDTO>();
+        CreateMap<ProductCreateDTO, ProductEntity>();
+        CreateMap<ProductEntity, OrderProductDTO>();
     }
 }

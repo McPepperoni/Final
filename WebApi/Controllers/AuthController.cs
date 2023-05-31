@@ -23,16 +23,6 @@ public class AuthController : BaseController
     }
 
     [AllowAnonymous]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [HttpPost("Register")]
-    public async Task<IActionResult> Register(AuthRegisterDTO authRegister)
-    {
-        await _authService.Register(authRegister);
-        return NoContent();
-    }
-
-    [AllowAnonymous]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(JWTTokenEntity))]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [HttpPost("Login")]
