@@ -43,6 +43,7 @@ public class CategoryService : BaseService<CategoryEntity>, ICategoryService
         };
 
         await _dbSet.AddAsync(category);
+        await _dbContext.SaveChangesAsync();
     }
 
     public async Task<CategoryDTO> Get(string id)

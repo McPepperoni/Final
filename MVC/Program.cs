@@ -27,7 +27,7 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
     {
         options.ExpireTimeSpan = TimeSpan.FromMinutes(20);
         options.SlidingExpiration = true;
-        options.AccessDeniedPath = "/";
+        options.AccessDeniedPath = "/Forbiden";
     });
 
 var app = builder.Build();

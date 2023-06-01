@@ -17,7 +17,7 @@ public class UserController : BaseController
     [AllowAnonymous]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [HttpPost("Register")]
+    [HttpPost]
     public async Task<IActionResult> Register(CreateUserDTO createUser)
     {
         await _userService.Create(createUser);

@@ -4,8 +4,7 @@
 @inject Persistence.Managers.FinalSignInManager SignInManager
 
 @{
-    var authen = SignInManager.Context.User.Identity.IsAuthenticated;
-    @* this.User.Identity.IsAuthenticated *@
+    ViewData["Title"] = "Product";
 }
 
 <div class="d-flex">
