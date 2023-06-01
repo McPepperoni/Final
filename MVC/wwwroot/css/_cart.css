@@ -1,0 +1,18 @@
+.cart {
+  width: 500px;
+  max-height: 400px;
+  overflow-y: scroll;
+}
+
+.cart img {
+  width: 50px;
+  aspect-ratio: 1;
+  object-fit: cover;
+}
+
+.item-name {
+  max-width: 200px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

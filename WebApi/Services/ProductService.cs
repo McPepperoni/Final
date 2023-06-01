@@ -10,7 +10,7 @@ using WebApi.Services;
 
 public interface IProductService
 {
-    Task<PaginationResponseDTO<ProductDTO>> Get(ProductPaginationRequestDTO paginationRequest);
+    Task<ProductPaginationResponseDTO> Get(ProductPaginationRequestDTO paginationRequest);
     Task<ProductDTO> Get(string id);
     Task<ProductDTO> Create(ProductCreateDTO productCreate);
     Task<ProductDTO> Update(string id, ProductUpdateDTO productUpdate);
@@ -25,7 +25,7 @@ public class ProductService : BaseService<ProductEntity>, IProductService
         _categoryDbSet = dbContext.Categories;
     }
 
-    public async Task<PaginationResponseDTO<ProductDTO>> Get(ProductPaginationRequestDTO paginationRequest)
+    public async Task<ProductPaginationResponseDTO> Get(ProductPaginationRequestDTO paginationRequest)
     {
         var products = _dbSet
                         .Where(x => x.Price > paginationRequest.PriceMin && x.Price < paginationRequest.PriceMax);
@@ -52,7 +52,7 @@ public class ProductService : BaseService<ProductEntity>, IProductService
         }
 
         var res = _mapper.Map<List<ProductDTO>>(await products.ToListAsync());
-        return new PaginationResponseDTO<ProductDTO>(paginationRequest, res);
+        return new ProductPaginationResponseDTO(paginationRequest, res);
     }
 
 

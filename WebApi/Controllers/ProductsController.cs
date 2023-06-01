@@ -13,7 +13,7 @@ public class ProductsController : BaseController
     }
 
     [HttpGet]
-    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(PaginationResponseDTO<ProductDTO>))]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ProductPaginationResponseDTO))]
     public async Task<IActionResult> Get([FromQuery] ProductPaginationRequestDTO paginationRequest)
     => Ok(await _productService.Get(paginationRequest));
 

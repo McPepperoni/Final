@@ -3,34 +3,32 @@
 @model List<ProductDTO>
 
 @{
-  var Data = new List<List<ProductDTO>>();
-  var col = 4;
-  
-  for (int i = 0; i < Model.Count(); i += col)
-  {
-    Data.Add(Model.Skip(i).Take(col).ToList());
-  }
+
 }
 
 <div class="mt-4 px-5 d-grid product-container">
-      @foreach (var row in Data)
-      {
-        @foreach (var item in row)
-        {
-          <div class="col-sm h-100">
-                <div class="card shadow-sm w-100 h-100">
-                  <img class="card-img-top" src="@item.ImgSrc" alt="Card image cap">
-                  <div class="card-body align-items-start d-flex flex-column product-card">
-                      <h5 class="card-title w-100">@item.Name</h5>
-                      <p class="card-text">@item.Price.ToString("N0") đ</p>
-                      <a href="#" class="btn btn-danger w-100">
-                          <i class="fa-solid fa-cart-plus"></i>
-                          Add to cart
-                      </a>
-                  </div>
-              </div>
-          </div>
-        }
-      }
-        
+    @foreach (var (item, i) in Model.Select((x, i) => (x, i)))
+    {
+        <div class="col-sm h-100">
+            <form method="post" class="card shadow-sm w-100 h-100" asp-route-id="@item.Id" asp-area="Product" asp-page-handler="AddToCart">
+                <img class="card-img-top" src="@item.ImgSrc" alt="Card image cap">
+                <div class="card-body align-items-start d-flex flex-column product-card justify-content-between">
+                    <h5 class="card-title w-100">@item.Name</h5>
+                    <div class="w-100">
+                        <div class="w-100 d-flex justify-content-between align-items-center mb-3">
+                            <p class="card-text mb-0">@item.Price.ToString("N0") đ</p>
+                                    <div class="form-group col-md-4">
+                                <input asp-for="@Model[i].Quantity" type="number" class="form-control rounded" value="1"/>
+                            </div>
+                        </div>
+                        <button class="btn btn-danger w-100" type="submit">
+                            <i class="fa-solid fa-cart-plus"></i>
+                            Add to cart
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    }
+
 </div>

@@ -19,3 +19,8 @@ public class ProductPaginationRequestDTO : PaginationRequestDTO
     public bool PublicStatus { get; set; }
     public bool PublicStatusValue { get; set; } = true;
 }
+
+public class ProductPaginationResponseDTO : PaginationResponseDTO<ProductDTO, ProductPaginationRequestDTO>
+{
+    public List<string> Categories { get; set; }
+}

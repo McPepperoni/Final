@@ -2,7 +2,7 @@
 @model IndexModel
 
 <form id="search" class="input-group mt-5 px-5" method="post" asp-page-handler="Search">
-  <input asp-for="Input.SearchQuery" type="text" class="form-control rounded" placeholder="Search">
+  <input asp-for="Input.SearchQuery" type="text" class="form-control rounded" placeholder="Search" value="@Model.Query">
   <div class="input-group-append">
     <button class="btn btn-outline-success ml-2 h-100" id="search-bt" type="submit" title="search-bt">
         <i class="fa-brands fa-searchengin"></i>

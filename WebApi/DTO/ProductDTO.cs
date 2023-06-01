@@ -38,3 +38,22 @@ public class ProductUpdateDTO
     public bool PublicStatus { get; set; }
     public List<string> CategoryIds { get; set; }
 }
+
+public class ProductPaginationResponseDTO : PaginationResponseDTO<ProductDTO>
+{
+    public List<string> Categories { get; set; }
+
+    public ProductPaginationResponseDTO(ProductPaginationRequestDTO paginationRequest, List<ProductDTO> data) : base(paginationRequest, data)
+    {
+        Categories = new List<string>();
+        foreach (var item in data)
+        {
+            foreach (var category in item.Categories)
+            {
+                Categories.Add(category.Category.Name);
+            }
+        }
+
+        Categories = Categories.Distinct().ToList();
+    }
+}
