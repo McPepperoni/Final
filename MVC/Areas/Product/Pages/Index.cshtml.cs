@@ -20,11 +20,15 @@ public class IndexModel : PageModel
     public PaginationResponseDTO<ProductDTO, ProductPaginationRequestDTO> Data { get; set; }
     [FromQuery(Name = "Page")]
     public int CurrentPage { get; set; }
+    [BindProperty]
+    public InputModel Input { get; set; }
     public class InputModel
     {
         public int MinPrice { get; set; }
         public int MaxPrice { get; set; }
+        public string SearchQuery { get; set; }
     }
+
     public IndexModel(IHttpClientFactory factory)
     {
         _client = factory.CreateClient("ProductAPIClient");
@@ -41,10 +45,13 @@ public class IndexModel : PageModel
         Data = await response.Content.ReadFromJsonAsync<PaginationResponseDTO<ProductDTO, ProductPaginationRequestDTO>>();
     }
 
-    public IActionResult OnGetNextPage()
+    public IActionResult OnPostSearch()
     {
-        CurrentPage++;
+        var queryString = System.Web.HttpUtility.ParseQueryString(string.Empty);
+        queryString.Add("SearchTerm", Input.SearchQuery);
+        var query = queryString.ToString();
+        Console.WriteLine(query);
 
-        return Page();
+        return RedirectToPage();
     }
 }

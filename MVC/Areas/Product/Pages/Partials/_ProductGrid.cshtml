@@ -12,27 +12,25 @@
   }
 }
 
-<div class="mt-4">
+<div class="mt-4 px-5 d-grid product-container">
       @foreach (var row in Data)
       {
-        <div class="row pt-3">
-              @foreach (var item in row)
-              {
-                <div class="col-sm h-100">
-                      <div class="card shadow-sm w-100 h-100">
-                        <img class="card-img-top" src="@item.ImgSrc" alt="Card image cap">
-                        <div class="card-body align-items-start d-flex flex-column h-100">
-                            <h5 class="card-title w-100">@item.Name</h5>
-                            <p class="card-text">@item.Price.ToString("N0") đ</p>
-                            <a href="#" class="btn btn-danger w-100">
-                                <i class="fa-solid fa-cart-plus"></i>
-                                Add to cart
-                            </a>
-                        </div>
-                    </div>
-                </div>
-              }
-        </div>
+        @foreach (var item in row)
+        {
+          <div class="col-sm h-100">
+                <div class="card shadow-sm w-100 h-100">
+                  <img class="card-img-top" src="@item.ImgSrc" alt="Card image cap">
+                  <div class="card-body align-items-start d-flex flex-column product-card">
+                      <h5 class="card-title w-100">@item.Name</h5>
+                      <p class="card-text">@item.Price.ToString("N0") đ</p>
+                      <a href="#" class="btn btn-danger w-100">
+                          <i class="fa-solid fa-cart-plus"></i>
+                          Add to cart
+                      </a>
+                  </div>
+              </div>
+          </div>
+        }
       }
         
 </div>

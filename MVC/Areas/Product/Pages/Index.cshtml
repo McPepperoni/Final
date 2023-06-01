@@ -11,8 +11,8 @@
 <div class="d-flex">
     @if(User.Identity.IsAuthenticated){
          @await Html.PartialAsync("Partials/_filter.cshtml", Model.Data.Data)
-        <div class="w-100 container d-flex flex-column align-items-center">
-            @await Html.PartialAsync("Partials/_searchbar.cshtml", Model.Data.Data)
+        <div class="w-100 top-container d-flex flex-column align-items-center">
+            @await Html.PartialAsync("Partials/_searchbar.cshtml", Model)
             @await Html.PartialAsync("Partials/_ProductGrid.cshtml", Model.Data.Data)
             @await Html.PartialAsync("Partials/_pagination.cshtml", Model.Data.PageData)
         </div>
