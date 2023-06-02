@@ -23,9 +23,26 @@ public class AuthController : BaseController
     }
 
     [AllowAnonymous]
-    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(JWTTokenEntity))]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(JWTTokenDTO))]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [HttpPost("Login")]
     public async Task<IActionResult> Login(AuthLoginDTO authLogin)
         => Ok(await _authService.Login(authLogin));
+
+    [AllowAnonymous]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [HttpPost("Logout")]
+    public async Task<IActionResult> Logout(AuthRefreshTokenDTO token)
+    {
+        await _authService.Logout(token);
+        return NoContent();
+    }
+
+    [AllowAnonymous]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(JWTTokenDTO))]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [HttpPost("RefreshToken")]
+    public async Task<IActionResult> RefreshToken([FromBody] AuthRefreshTokenDTO token)
+        => Ok(await _authService.RefreshToken(token));
 }

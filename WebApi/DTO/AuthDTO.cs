@@ -28,3 +28,16 @@ public class AuthLoginDTOValidator : AbstractValidator<AuthLoginDTO>
         RuleFor(x => x.Password).Password();
     }
 }
+
+public class AuthRefreshTokenDTO
+{
+    public string RefreshToken { get; set; }
+}
+
+public class AuthRefreshTokenDTOValidator : AbstractValidator<AuthRefreshTokenDTO>
+{
+    public AuthRefreshTokenDTOValidator()
+    {
+        RuleFor(x => x.RefreshToken).NotEmpty();
+    }
+}

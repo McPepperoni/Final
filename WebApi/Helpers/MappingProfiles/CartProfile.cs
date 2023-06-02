@@ -8,6 +8,7 @@ public class CartProfile : Profile
 {
     public CartProfile()
     {
-        CreateMap<CartEntity, CartDTO>();
+        CreateMap<CartEntity, CartDTO>()
+        .ForMember(x => x.TotalPrice, cfg => cfg.MapFrom(src => src.CartProducts.Select(x => x.Quantity * x.Product.Price).Sum()));
     }
 }

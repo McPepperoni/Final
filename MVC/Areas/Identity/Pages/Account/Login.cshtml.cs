@@ -11,8 +11,8 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using MVC.DTOs;
 using Newtonsoft.Json;
-using Persistence.Entities;
 using Persistence.Managers;
 
 namespace MVC.Areas.Identity.Pages.Account
@@ -82,15 +82,15 @@ namespace MVC.Areas.Identity.Pages.Account
                 var response = await _client.PostAsJsonAsync("Auth/Login", Input);
                 if (response.StatusCode == HttpStatusCode.OK)
                 {
-                    var content = await response.Content.ReadFromJsonAsync<JWTTokenEntity>();
+                    var content = await response.Content.ReadFromJsonAsync<AuthTokenResultDTO>();
                     // HttpContext.Session.Set("Auth-token", Encoding.UTF8.GetBytes(token.Token));
 
                     var handler = new JwtSecurityTokenHandler();
 
-                    var token = handler.ReadJwtToken(content.Token);
+                    var token = handler.ReadJwtToken(content.AccessToken);
 
                     var claims = ((JwtSecurityToken)token).Claims.ToList();
-                    claims.Add(new Claim("JWT", content.Token));
+                    claims.Add(new Claim("JWT", content.AccessToken));
 
                     var claimsIdentity = new ClaimsIdentity(
                         claims, CookieAuthenticationDefaults.AuthenticationScheme);
@@ -98,6 +98,7 @@ namespace MVC.Areas.Identity.Pages.Account
                     var authProperties = new AuthenticationProperties
                     {
                         IsPersistent = true,
+                        ExpiresUtc = DateTimeOffset.FromUnixTimeSeconds(int.Parse(claims.Where(x => x.Type == JwtRegisteredClaimNames.Exp).FirstOrDefault().Value))
                     };
 
                     await HttpContext.SignInAsync(
@@ -113,8 +114,6 @@ namespace MVC.Areas.Identity.Pages.Account
                     return Page();
                 }
             }
-
-            // If we got this far, something failed, redisplay form
             return Page();
         }
 

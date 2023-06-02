@@ -23,3 +23,13 @@
 .product-card {
   height: 100% !important;
 }
+
+.card-title {
+  max-width: 100%;
+  overflow: hidden;
+  /* white-space: nowrap; */
+}
+
+.category-container {
+  font-size: small;
+}

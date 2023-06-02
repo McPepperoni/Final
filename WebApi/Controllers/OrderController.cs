@@ -22,7 +22,7 @@ public class OrderController : BaseController
 
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [HttpPut]
+    [HttpPut("{id}")]
     public async Task<IActionResult> Proceed(string id)
     {
         await _orderService.ProceedOrder(id);
@@ -32,7 +32,7 @@ public class OrderController : BaseController
 
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [HttpDelete]
+    [HttpDelete("{id}")]
     public async Task<IActionResult> Cancel(string id)
     {
         await _orderService.CancelOrder(id);

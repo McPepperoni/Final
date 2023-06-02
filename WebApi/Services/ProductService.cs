@@ -20,7 +20,7 @@ public interface IProductService
 public class ProductService : BaseService<ProductEntity>, IProductService
 {
     private readonly DbSet<CategoryEntity> _categoryDbSet;
-    public ProductService(ApplicationDbContext dbContext, IMapper mapper) : base(dbContext, mapper)
+    public ProductService(ApplicationDbContext dbContext, IMapper mapper, IHttpContextAccessor httpContextAccessor) : base(httpContextAccessor, dbContext, mapper)
     {
         _categoryDbSet = dbContext.Categories;
     }
@@ -157,6 +157,10 @@ public class ProductService : BaseService<ProductEntity>, IProductService
     public async Task<ProductDTO> Delete(string id)
     {
         var product = await _dbSet.FindAsync(id);
+        if (product == null)
+        {
+            throw new AppException(HttpStatusCode.NotFound, String.Format(ErrorMessages.NOT_FOUND_ERROR, "product", "id", id));
+        }
 
         _dbSet.Remove(product);
 

@@ -15,19 +15,19 @@ public class CartController : BaseController
 
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(CartDTO))]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [HttpGet]
-    public async Task<IActionResult> Get([FromQuery] UserCartDTO cart)
+    [HttpGet("{userId}")]
+    public async Task<IActionResult> Get(string userId)
     {
-        var res = await _cartService.Get(cart.UserId);
+        var res = await _cartService.Get(userId);
         return Ok(res);
     }
 
     [ProducesResponseType(StatusCodes.Status409Conflict)]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(CartDTO))]
-    [HttpPost]
-    public async Task Create([FromQuery] UserCartDTO cart)
+    [HttpPost("{userId}")]
+    public async Task Create(string userId)
     {
-        await _cartService.Create(cart.UserId);
+        await _cartService.CreateAsync(userId);
         NoContent();
     }
 
@@ -36,4 +36,6 @@ public class CartController : BaseController
     [HttpPut]
     public async Task<IActionResult> Update(UpdateCartDTO updateCart)
     => Ok(await _cartService.Update(updateCart));
+
+
 }

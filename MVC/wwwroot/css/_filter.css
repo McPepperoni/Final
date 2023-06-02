@@ -5,7 +5,6 @@
   overflow-y: scroll;
   left: 0;
   top: 0;
-  padding-top: 99px;
 }
 
 .side-bar-container {
@@ -66,11 +65,16 @@
 
 .header-panel {
   right: 0;
-  top: 20%;
+  top: 100%;
   display: none;
+}
+
+.dropdown-title {
+  position: relative;
 }
 
 .dropdown-title:hover .header-panel {
   display: flex;
   flex-direction: column;
+  width: 200px;
 }

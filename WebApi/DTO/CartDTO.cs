@@ -5,6 +5,7 @@ namespace WebApi.DTOs;
 public class CartDTO : BaseDTO
 {
     public string UserId { get; set; }
+    public int TotalPrice { get; set; }
     public List<CartProductDTO> CartProducts { get; set; }
 }
 
@@ -39,5 +40,20 @@ public class UpdateCartDTOValidator : AbstractValidator<UpdateCartDTO>
     {
         RuleFor(x => x.Instruction).NotEmpty();
         RuleFor(x => x.Id).NotEmpty();
+    }
+}
+
+public class AddToCartDTO
+{
+    public string ItemId { get; set; }
+    public int Quantity { get; set; }
+}
+
+public class AddToCartDTOValidator : AbstractValidator<AddToCartDTO>
+{
+    public AddToCartDTOValidator()
+    {
+        RuleFor(x => x.ItemId).Id();
+        RuleFor(x => x.Quantity).GreaterThan(0);
     }
 }

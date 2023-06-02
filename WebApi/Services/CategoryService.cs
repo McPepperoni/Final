@@ -22,7 +22,7 @@ public class CategoryService : BaseService<CategoryEntity>, ICategoryService
 {
     private readonly DbSet<ProductEntity> _productDbSet;
     private readonly DbSet<CartProductEntity> _categoryProductDbSet;
-    public CategoryService(ApplicationDbContext dbContext, IMapper mapper) : base(dbContext, mapper)
+    public CategoryService(ApplicationDbContext dbContext, IMapper mapper, IHttpContextAccessor httpContextAccessor) : base(httpContextAccessor, dbContext, mapper)
     {
         _productDbSet = dbContext.Products;
         _categoryProductDbSet = dbContext.CartProducts;

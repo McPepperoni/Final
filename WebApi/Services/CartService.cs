@@ -11,10 +11,11 @@ namespace WebApi.Services;
 
 public interface ICartService
 {
-    Task Create(string userId);
+    Task CreateAsync(string userId);
     Task<CartDTO> Get(string userId);
     Task<CartDTO> Update(UpdateCartDTO updateCart);
     Task<CartDTO> Delete(string itemId);
+
 }
 
 public class CartService : BaseService<CartEntity>, ICartService
@@ -22,14 +23,14 @@ public class CartService : BaseService<CartEntity>, ICartService
     private readonly DbSet<UserEntity> _userDbSet;
     private readonly DbSet<ProductEntity> _productDbSet;
     private readonly DbSet<CartProductEntity> _cartProductDbSet;
-    public CartService(ApplicationDbContext dbContext, IMapper mapper) : base(dbContext, mapper)
+    public CartService(ApplicationDbContext dbContext, IMapper mapper, IHttpContextAccessor httpContextAccessor) : base(httpContextAccessor, dbContext, mapper)
     {
         _userDbSet = dbContext.Users;
         _productDbSet = dbContext.Products;
         _cartProductDbSet = dbContext.CartProducts;
     }
 
-    public async Task Create(string userId)
+    public async Task CreateAsync(string userId)
     {
         var user = await _userDbSet.FindAsync(userId);
 

@@ -29,12 +29,11 @@ public class IndexModel : PageModel
 
     [BindProperty]
     public InputModel Input { get; set; }
-    [BindProperty]
-    public List<ProductDTO> Products { get; set; }
     public class InputModel
     {
         public string SearchQuery { get; set; }
         public Filter ProductFilter { get; set; }
+        public int ProductsQuantity { get; set; }
 
         public class Filter
         {
@@ -97,15 +96,14 @@ public class IndexModel : PageModel
         {
             SearchQuery = Query,
             ProductFilter = dataFilter,
+            ProductsQuantity = 1
         };
-
-        Products = Data.Data;
     }
 
-    public IActionResult OnPostSearch()
+    public IActionResult OnPostSearch(string currentUri)
     {
-        var queryString = System.Web.HttpUtility.ParseQueryString(string.Empty);
-        queryString.Add("Query", Input.SearchQuery);
+        var queryString = System.Web.HttpUtility.ParseQueryString(currentUri ?? String.Empty);
+        queryString["Query"] = Input.SearchQuery;
 
         return Redirect($"/Product?{queryString.ToString()}");
     }
@@ -143,12 +141,16 @@ public class IndexModel : PageModel
 
     public async Task<IActionResult> OnPostAddToCartAsync(string id)
     {
-        var userId = User.Claims.Where(x => x.Type == JwtRegisteredClaimNames.Sub);
+        var userId = User.Claims.Where(x => x.Type == JwtRegisteredClaimNames.Sub).FirstOrDefault().Value;
         _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", User.Claims.Where(x => x.Type == "JWT").FirstOrDefault().Value);
 
-        var response = await _client.GetAsync($"Cart?UserId={userId}");
+        var requestBody = new AddToCartDTO()
+        {
+            ItemId = id,
+            Quantity = Input.ProductsQuantity,
+        };
 
-        var content = response.Content.ReadFromJsonAsync<CartDTO>();
+        var response = await _client.PostAsJsonAsync($"CartItem/AddToCart?userId={userId}", requestBody);
 
         return RedirectToPage();
     }

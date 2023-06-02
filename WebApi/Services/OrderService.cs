@@ -22,7 +22,7 @@ public class OrderService : BaseService<OrderEntity>, IOrderService
     private readonly DbSet<CartProductEntity> _cartProducts;
     private readonly DbSet<OrderProductEntity> _orderProducts;
 
-    public OrderService(ApplicationDbContext dbContext, IMapper mapper) : base(dbContext, mapper)
+    public OrderService(ApplicationDbContext dbContext, IMapper mapper, IHttpContextAccessor httpContextAccessor) : base(httpContextAccessor, dbContext, mapper)
     {
         _cartProducts = dbContext.CartProducts;
         _orderProducts = dbContext.OrderProducts;

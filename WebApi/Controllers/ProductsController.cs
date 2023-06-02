@@ -30,15 +30,16 @@ public class ProductsController : BaseController
     public async Task<IActionResult> Create([FromBody] ProductCreateDTO productCreate)
     => Ok(await _productService.Create(productCreate));
 
-    [HttpPut]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ProductDTO))]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> Update([FromQuery] string id, [FromBody] ProductUpdateDTO productUpdate)
+    [HttpPut("{id}")]
+    public async Task<IActionResult> Update(string id, [FromBody] ProductUpdateDTO productUpdate)
     => Ok(await _productService.Update(id, productUpdate));
 
-    [HttpDelete]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ProductDTO))]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(string id)
     => Ok(await _productService.Delete(id));
 }

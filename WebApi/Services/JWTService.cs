@@ -19,7 +19,7 @@ public interface IJWTService
 public class JWTService : BaseService<JWTTokenEntity>, IJWTService
 {
     private readonly JWTHelper _jwtHelper;
-    public JWTService(ApplicationDbContext dbContext, JWTHelper jwtHelper, IMapper mapper) : base(dbContext, mapper)
+    public JWTService(ApplicationDbContext dbContext, JWTHelper jwtHelper, IMapper mapper, IHttpContextAccessor httpContextAccessor) : base(httpContextAccessor, dbContext, mapper)
     {
         _jwtHelper = jwtHelper;
     }

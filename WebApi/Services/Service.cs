@@ -13,6 +13,7 @@ public static class Services
         services.AddScoped<ICartService, CartService>();
         services.AddScoped<IOrderService, OrderService>();
         services.AddScoped<ICategoryService, CategoryService>();
+        services.AddScoped<ICartItemService, CartItemService>();
 
         return services;
     }

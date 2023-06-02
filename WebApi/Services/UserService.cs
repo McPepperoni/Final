@@ -23,7 +23,7 @@ public interface IUserService
 public class UserService : BaseService<UserEntity>, IUserService
 {
     private readonly FinalUserManager _userManager;
-    public UserService(ApplicationDbContext dbContext, IMapper mapper, FinalUserManager userManager) : base(dbContext, mapper)
+    public UserService(ApplicationDbContext dbContext, IMapper mapper, FinalUserManager userManager, IHttpContextAccessor httpContextAccessor) : base(httpContextAccessor, dbContext, mapper)
     {
         _userManager = userManager;
     }

@@ -16,3 +16,16 @@ dropdownTitle.onclick = () => {
     dropdownBody.classList.add("dropdown-show");
   }
 };
+
+///
+var selectedCartItems = document.getElementsByClassName("cart-item-input");
+var placeOrderButton = document.getElementById("place-order-button");
+
+const onChangeSelectedCartItems = () => {
+  var filteredSelect = selectedCartItems.filter((x) => x.checked);
+  placeOrderButton.innerText = `Place Order (${filteredSelect.length})`;
+};
+
+selectedCartItems.forEach((element) => {
+  element.onclick = onChangeSelectedCartItems;
+});

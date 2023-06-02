@@ -15,7 +15,11 @@ builder.Services.AddSingleton<AppSettings>();
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddIdentities();
 builder.Services.AddHelpers(builder.Environment);
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddServices();
+// Don't forget to call this; otherwise the HttpContext property will be
+// null on production.
+builder.Services.AddHttpContextAccessor();
 if (!builder.Environment.IsEnvironment("Test"))
 {
     builder.Services.AddBackgroundJobs();

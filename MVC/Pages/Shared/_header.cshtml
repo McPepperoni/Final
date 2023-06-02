@@ -1,8 +1,14 @@
 @using Microsoft.AspNetCore.Identity
+@using Microsoft.AspNetCore.Http.Extensions
 @using Persistence.Entities
+@using System.Web
 
 @inject SignInManager<UserEntity> _signInManager
 @inject UserManager<UserEntity> UserManager
+
+@{
+    var returnUrl = HttpUtility.UrlEncode(ViewContext.HttpContext.Request.GetEncodedPathAndQuery());
+}
 
 <header>
     <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark border-bottom shadow pb-3 pt-3 bg-dark fixed-top">
@@ -27,16 +33,25 @@
                     else
                     {
                         <li class="nav-item dropdown-title d-flex align-items-center">
-                            <div class="d-flex">
+                            <div class="d-flex ">
                                 <h6 class="mb-0 mr-2 text-center">@(User.Claims.Where(x => x.Type == "fullName").FirstOrDefault().Value)</h6> 
                                 <h5>
                                     <i class="fa-solid fa-user"></i>
                                 </h5>
                             </div>
-                            <div class="list-group header-panel p-absolute bg-dark rounded-top mr-2">
-                                <a asp-area="Product" asp-page="/Cart" class="list-group-item list-group-item-action bg-success text-light">Cart</a>
-                                <a href="#" class="list-group-item list-group-item-action">Edit profile</a>
-                                <a  class="list-group-item list-group-item-action bg-secondary text-light" asp-area="Identity" asp-page="/Account/Logout" >Logout</a>
+                            <div class="list-group header-panel p-absolute bg-dark rounded-top mr-2 text-dark">
+                                <a href="/Product/Cart?returnURL=@returnUrl" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                                    <span>Cart</span>
+                                    <i class="fa-solid fa-cart-shopping"></i>   
+                                </a>
+                                <a href="#" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                                    <span>Edit profile</span>
+                                    <i class="fa-regular fa-pen-to-square"></i>
+                                </a>
+                                <a  class="list-group-item list-group-item-action bg-secondary text-light d-flex justify-content-between align-items-center" asp-area="Identity" asp-page="/Account/Logout" >
+                                    Logout
+                                    <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                                </a>
                             </div>
                         </li>
                     }

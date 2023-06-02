@@ -14,9 +14,9 @@ using WebApi.Services;
 using WebApi.Settings;
 public interface IAuthService
 {
-    Task<JWTTokenDTO> Login(AuthLoginDTO authLogin);
-    Task Logout(string token);
-    Task<JWTTokenDTO> RefreshToken(string token);
+    Task<AuthTokenResultDTO> Login(AuthLoginDTO authLogin);
+    Task Logout(AuthRefreshTokenDTO token);
+    Task<AuthTokenResultDTO> RefreshToken(AuthRefreshTokenDTO token);
 }
 
 public class AuthService : BaseService<UserEntity>, IAuthService
@@ -26,7 +26,7 @@ public class AuthService : BaseService<UserEntity>, IAuthService
     private readonly AppSettings _appSettings;
     private readonly FinalUserManager _userManager;
     private readonly FinalSignInManager _signInManager;
-    public AuthService(ApplicationDbContext dbContext, JWTHelper jwtHelper, IMapper mapper, AppSettings appSettings, FinalUserManager userManager, FinalSignInManager signInManager) : base(dbContext, mapper)
+    public AuthService(ApplicationDbContext dbContext, JWTHelper jwtHelper, IMapper mapper, AppSettings appSettings, FinalUserManager userManager, FinalSignInManager signInManager, IHttpContextAccessor httpContextAccessor) : base(httpContextAccessor, dbContext, mapper)
     {
         _jwtHelper = jwtHelper;
         _appSettings = appSettings;
@@ -35,7 +35,7 @@ public class AuthService : BaseService<UserEntity>, IAuthService
         _whiteListedToken = _dbContext.WhiteListedToken;
     }
 
-    public async Task<JWTTokenDTO> Login(AuthLoginDTO authLogin)
+    public async Task<AuthTokenResultDTO> Login(AuthLoginDTO authLogin)
     {
         var result = await _signInManager.SignInWithEmailPasswordAsync(authLogin.Email, authLogin.Password, true);
 
@@ -44,18 +44,25 @@ public class AuthService : BaseService<UserEntity>, IAuthService
             throw new AppException(HttpStatusCode.BadRequest, String.Format(ErrorMessages.BAD_REQUEST_FAILED, "Login"));
         }
 
-        var token = await _jwtHelper.Create(await _userManager.FindByEmailAsync(authLogin.Email), DateTime.UtcNow.AddHours(1));
-        await _whiteListedToken.AddAsync(token);
+        var accessToken = await _jwtHelper.Create(await _userManager.FindByEmailAsync(authLogin.Email), DateTime.UtcNow.AddHours(1));
+        var refreshToken = await _jwtHelper.Create(await _userManager.FindByEmailAsync(authLogin.Email), DateTime.UtcNow.AddDays(2));
+        await _whiteListedToken.AddAsync(refreshToken);
 
         await _dbContext.SaveChangesAsync();
 
 
-        return _mapper.Map<JWTTokenDTO>(token);
+
+
+        return new AuthTokenResultDTO
+        {
+            AccessToken = accessToken.Token,
+            RefreshToken = refreshToken.Token
+        };
     }
 
-    public async Task<JWTTokenDTO> RefreshToken(string ExpiredToken)
+    public async Task<AuthTokenResultDTO> RefreshToken(AuthRefreshTokenDTO ExpiredToken)
     {
-        var token = await _whiteListedToken.Where(x => x.Token == ExpiredToken).FirstOrDefaultAsync();
+        var token = await _whiteListedToken.Where(x => x.Token == ExpiredToken.RefreshToken).FirstOrDefaultAsync();
         if (token == null)
         {
             throw new AppException(HttpStatusCode.NotFound, String.Format(ErrorMessages.NOT_FOUND_ERROR, "Token", "Token", "Provided value"));
@@ -80,19 +87,25 @@ public class AuthService : BaseService<UserEntity>, IAuthService
             throw new AppException(HttpStatusCode.BadRequest, String.Format(ErrorMessages.BAD_REQUEST_INVALID, "Token"));
         }
 
-        var result = await _jwtHelper.Create(user, DateTime.UtcNow.AddHours(1));
-        await _whiteListedToken.AddAsync(result);
+        var refreshToken = await _jwtHelper.Create(user, DateTime.UtcNow.AddDays(2));
+        var accessToken = await _jwtHelper.Create(user, DateTime.UtcNow.AddHours(1));
+
+        await _whiteListedToken.AddAsync(refreshToken);
         _whiteListedToken.Remove(token);
 
         await _dbContext.SaveChangesAsync();
 
 
-        return _mapper.Map<JWTTokenDTO>(result);
+        return new AuthTokenResultDTO
+        {
+            AccessToken = accessToken.Token,
+            RefreshToken = refreshToken.Token
+        };
     }
 
-    public async Task Logout(string token)
+    public async Task Logout(AuthRefreshTokenDTO token)
     {
-        var existedToken = await _whiteListedToken.Where(x => x.Token == token).FirstOrDefaultAsync();
+        var existedToken = await _whiteListedToken.Where(x => x.Token == token.RefreshToken).FirstOrDefaultAsync();
         if (existedToken == null)
         {
             throw new AppException(HttpStatusCode.NotFound, String.Format(ErrorMessages.NOT_FOUND_ERROR, "Token", "Token", "Provided value"));
