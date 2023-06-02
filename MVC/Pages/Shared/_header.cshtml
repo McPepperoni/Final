@@ -34,8 +34,7 @@
                                 </h5>
                             </div>
                             <div class="list-group header-panel p-absolute bg-dark rounded-top mr-2">
-                                @await Html.PartialAsync("./Cart/_cart.cshtml")
-                                <a href="#" class="list-group-item list-group-item-action bg-success text-light">Check out</a>
+                                <a asp-area="Product" asp-page="/Cart" class="list-group-item list-group-item-action bg-success text-light">Cart</a>
                                 <a href="#" class="list-group-item list-group-item-action">Edit profile</a>
                                 <a  class="list-group-item list-group-item-action bg-secondary text-light" asp-area="Identity" asp-page="/Account/Logout" >Logout</a>
                             </div>

@@ -10,7 +10,7 @@
 <div class="d-flex">
     @if(User.Identity.IsAuthenticated){
          @await Html.PartialAsync("Partials/_filter.cshtml", Model.Input)
-        <div class="w-100 top-container d-flex flex-column align-items-center">
+        <div class="w-100 d-flex flex-column align-items-center">
             @await Html.PartialAsync("Partials/_searchbar.cshtml", Model)
             @await Html.PartialAsync("Partials/_ProductGrid.cshtml", Model.Products)
             @await Html.PartialAsync("Partials/_pagination.cshtml", Model.Data.PageData)

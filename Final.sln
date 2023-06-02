@@ -9,7 +9,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApi.Test", "WebApi.Test\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MVC", "MVC\MVC.csproj", "{FF70F70D-370F-40D4-AB9D-6ADF5F1582D7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Persistance", "Persistence\Persistance.csproj", "{E2AED2A0-A083-4F08-86B4-3FBB37784739}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Persistence", "Persistence\Persistence.csproj", "{E2AED2A0-A083-4F08-86B4-3FBB37784739}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

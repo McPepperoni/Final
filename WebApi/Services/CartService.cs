@@ -57,6 +57,10 @@ public class CartService : BaseService<CartEntity>, ICartService
             throw new AppException(HttpStatusCode.NotFound, String.Format(ErrorMessages.NOT_FOUND_ERROR, "Cart", "UserId", userId));
         }
 
+        if (user.Cart.CartProducts == null)
+        {
+            user.Cart.CartProducts = new() { };
+        }
         return _mapper.Map<CartDTO>(user.Cart);
     }
 

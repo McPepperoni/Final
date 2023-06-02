@@ -1,7 +1,7 @@
 .cart {
-  width: 500px;
-  max-height: 400px;
-  overflow-y: scroll;
+  height: 400px;
+  width: fit-content;
+  overflow-y: auto;
 }
 
 .cart img {
@@ -15,4 +15,14 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.full-cover {
+  min-height: calc(100vh - 100px);
+  padding-top: 100px;
+}
+
+.cart-container {
+  width: fit-content;
+  margin-inline: auto;
 }

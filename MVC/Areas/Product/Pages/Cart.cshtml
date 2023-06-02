@@ -1,0 +1,62 @@
+@page
+@using MVC.Areas.Product
+
+@model CartModel
+
+@{
+    ViewData["Title"] = "Cart";
+}
+
+<div class="">
+    <div class="bg-light text-dark px-2 py-2 d-flex flex-column justify-content-center pt-5 cart-container">
+      <ul class="list-group cart border mb-5 shadow-sm p-3 rounded">
+        <li
+          class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
+        >
+            @foreach(var item in Model.Input.CartItems){
+            <div class="d-flex justify-content-start align-items-center">
+                <input type="checkbox" name="" id="">
+                <div class="img-container">
+                    <img class="border rounded mx-3" src="https://source.unsplash.com/random/800x800/?img=5" alt="product-profile">
+                </div>
+                <div class="item-name">Peanutasdl;jsaklasdasjd sjakdjalskjdasgiodj ;</div>
+            </div>
+
+            }
+            <div class="d-flex justify-content-start align-items-center">
+                <div class="item-price">200.000d</div>
+                <button type="submit" class="btn btn-danger ml-2">
+                    <i class="fa-solid fa-circle-minus"></i>
+                </button>
+            </div>
+        </li>
+        <li
+          class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
+        >
+            <div class="d-flex justify-content-start align-items-center">
+                <input type="checkbox" name="" id="">
+                <div class="img-container">
+                    <img class="border rounded mx-3" src="https://source.unsplash.com/random/800x800/?img=5" alt="product-profile">
+                </div>
+                <div class="item-name">Peanutasdl;jsaklasdasjd sjakdjalskjdasgiodj ;</div>
+            </div>
+            <div class="d-flex justify-content-start align-items-center">
+                <div class="item-price">200.000d</div>
+                <button type="submit" class="btn btn-danger ml-2">
+                    <i class="fa-solid fa-circle-minus"></i>
+                </button>
+            </div>
+        </li>
+      </ul>
+      <div class="btn-group">
+        <a class="btn btn-secondary mr-3">
+            <i class="fa-solid fa-arrow-left"></i>
+            <span class="ml-2">Back</span>
+        </a>
+        <button type="submit" class="btn btn-warning ">
+            <span class="mr-2">Place order</span>
+            <i class="fa-solid fa-arrow-right"></i>
+        </button>
+        </div>
+    </div>
+</div>

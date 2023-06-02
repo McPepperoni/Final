@@ -18,6 +18,10 @@ public class FinalUserManager : UserManager<UserEntity>
     public override async Task<IdentityResult> CreateAsync(UserEntity user, string password)
     {
         user.UserName = user.Email;
+        user.Cart = new CartEntity()
+        {
+            CartProducts = new()
+        };
 
         return await base.CreateAsync(user, password);
     }
