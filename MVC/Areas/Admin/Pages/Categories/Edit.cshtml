@@ -1,0 +1,55 @@
+@page
+@using MVC.Areas.Admin.Pages.Categories
+@model EditModel
+
+@{
+    ViewData["Title"] = "Categories edit";
+}
+
+<div class="d-flex justify-content-center align-items-center flex-column w-100 mt-5">
+  <div class="d-flex w-100 edit-container mt-5 border rounded p-5">
+    <div class="d-flex flex-column w-50">
+        <div class="w-100 rounded p-1 item-img p-5">
+            <img
+            src="https://source.unsplash.com/random/800x800/?img=2"
+            alt="profile-img" class="rounded shadow">
+        </div>
+    </div>
+    <form class="flex flex-column w-50" method="post" id="user-edit-form" asp-route-id="@Model.Category.Id">
+        <div class="d-flex flex-column mx-3 justify-content-center h-100">
+<div class="d-flex flex-column mb-5">
+                @Html.ValidationMessage("Existed", new {@class = "text-danger mb-3"})
+                <div class="mb-3 d-flex flex-column">
+                    <div class="input-group d-flex w-100">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text" id="basic-addon1">Id</span>
+                        </div>
+                        <input disabled value="@Model.Category.Id" type="text" class="form-control" placeholder="Name" aria-label="Name" aria-describedby="basic-addon1" id="name-input">
+                    </div>
+                </div>
+                <div class="mb-3 d-flex flex-column">
+                    <div class="input-group d-flex w-100">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text" id="basic-addon1">Name</span>
+                        </div>
+                        <input required asp-for="Input.Category.Name" value="@Model.Category.Name" type="text" class="form-control" placeholder="Name" aria-label="Name" aria-describedby="basic-addon1" id="name-input">
+                    </div>
+                    <span asp-validation-for="Input.Category.Name" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="d-flex flex-column" >
+                <p class="item-id m-0"><strong>Created at:</strong> @Model.Category.CreatedAt</p>
+                <p class="item-id m-0"><strong>Last modified:</strong> @Model.Category.ModifiedAt</p>
+                <div class="d-flex">
+                    <button value="@Model.Category.Name" type="submit" disabled class="btn btn-success w-fit mt-5" id="save-button">Save</button>
+                    <a href="/Admin/Users" class="btn btn-danger w-fit mt-5 mx-3">Cancel</a>
+                </div>
+            </div>
+        </div>
+    </form>
+  </div>
+</div>
+
+@section Scripts {
+        <partial name="_ValidationScriptsPartial" />
+}

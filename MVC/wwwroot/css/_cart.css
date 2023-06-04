@@ -45,3 +45,7 @@
 .p-inline-6 {
   padding-inline: 2rem !important;
 }
+
+.cart-group {
+  min-width: 700px;
+}

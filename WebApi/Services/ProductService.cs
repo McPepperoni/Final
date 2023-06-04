@@ -51,10 +51,11 @@ public class ProductService : BaseService<ProductEntity>, IProductService
             products = products.Where(p => p.Categories.Any(x => categories.Contains(x.Category.Name)));
         }
 
+        products.OrderByDescending(x => x.ModifiedAt);
+
         var res = _mapper.Map<List<ProductDTO>>(await products.ToListAsync());
         return new ProductPaginationResponseDTO(paginationRequest, res);
     }
-
 
     public async Task<ProductDTO> Create(ProductCreateDTO productCreate)
     {
@@ -96,6 +97,7 @@ public class ProductService : BaseService<ProductEntity>, IProductService
     {
         var product = await _dbSet
                             .Include(x => x.Categories)
+                            .ThenInclude(x => x.Category)
                             .Where(x => x.Id == id)
                             .FirstOrDefaultAsync();
 
@@ -119,7 +121,7 @@ public class ProductService : BaseService<ProductEntity>, IProductService
         }
 
         var namedProduct = await _dbSet
-                            .Where(x => productUpdate.Name == x.Name)
+                            .Where(x => productUpdate.Name == x.Name && x.Id != Id)
                             .FirstOrDefaultAsync();
 
         if (namedProduct != null)
@@ -144,6 +146,7 @@ public class ProductService : BaseService<ProductEntity>, IProductService
         }
 
         product.Categories = productCategories;
+        product.Price = productUpdate.Price;
         product.Name = productUpdate.Name;
         product.Quantity = productUpdate.Quantity;
         product.PublicStatus = productUpdate.PublicStatus;

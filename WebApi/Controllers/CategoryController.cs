@@ -27,12 +27,14 @@ public class CategoryController : BaseController
     public async Task<IActionResult> Get(string id)
     => Ok(await _categoryService.Get(id));
 
+    [Authorize(Roles = "Admin")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<CategoryDTO>))]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [HttpPut("{id:length(36)}")]
     public async Task<IActionResult> Update(string id, [FromBody] UpdateCategoryDTO updateCategory)
     => Ok(await _categoryService.Update(id, updateCategory));
 
+    [Authorize(Roles = "Admin")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
     [HttpPost]
@@ -42,6 +44,7 @@ public class CategoryController : BaseController
         return NoContent();
     }
 
+    [Authorize(Roles = "Admin")]
     [HttpDelete("{id:length(36)}")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(CategoryDTO))]
     public async Task<IActionResult> Delete(string id)

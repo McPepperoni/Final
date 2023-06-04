@@ -1,13 +1,20 @@
+using System.IdentityModel.Tokens.Jwt;
 using System.Net.Http.Json;
+using System.Security.Claims;
+using System.Text;
 using AutoMapper;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
-
-using WebApi.Contexts;
+using Persistence;
+using Persistence.Entities;
+using Persistence.Managers;
 using WebApi.DTOs;
-using WebApi.Entities;
-
+using WebApi.Helpers.DataSeeding;
+using WebApi.Helpers.JWT;
+using WebApi.Settings;
 using WebApi.Test.Factory;
 using WebApi.Test.MappingProfiles;
 
@@ -18,12 +25,29 @@ public class TestClassFixture : IClassFixture<TestWebApplicationFactory<Program>
     protected readonly TestWebApplicationFactory<Program> _factory;
     protected readonly HttpClient _client;
     protected readonly IMapper _mapper;
+    protected UserEntity AdminUser;
+    protected UserEntity User;
+    protected readonly string _JWTKey;
+
+    public class UserSeedDTO
+    {
+        public Guid Id { get; set; }
+        public string Email { get; set; }
+        public string Password { get; set; }
+        public string FullName { get; set; }
+        public string PhoneNumber { get; set; }
+        public string Address { get; set; }
+        public string Role { get; set; }
+    }
 
     protected TestClassFixture(TestWebApplicationFactory<Program> factory)
     {
         _factory = factory;
 
-        SeedData();
+        var scope = _factory.Services.CreateScope();
+        var settings = scope.ServiceProvider.GetRequiredService<AppSettings>();
+
+        _JWTKey = settings.JWT.Key;
 
         var mapperConfig = new MapperConfiguration(cfg =>
         {
@@ -33,65 +57,157 @@ public class TestClassFixture : IClassFixture<TestWebApplicationFactory<Program>
         _client = _factory.CreateClient();
         _client.BaseAddress = new Uri(_client.BaseAddress.ToString() + "api/v1/");
         _mapper = new Mapper(mapperConfig);
-    }
-
-    protected async Task<LoginResponseDTO> GetAuth()
-    {
-        var response = await _client.PostAsJsonAsync("Auth/login", new UserLoginDTO()
-        {
-            Email = "quangnguyen16200@gmail.com",
-            Password = "Thehpteam_16",
-        });
-
-        return await response.Content.ReadFromJsonAsync<LoginResponseDTO>();
+        SeedData();
     }
 
     protected void SeedData()
     {
+        Console.WriteLine("Begin seeding data...");
         using var scope = _factory.Services.CreateScope();
-        using var _dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        dbContext.Database.Migrate();
 
-        var loggedUser = new UserEntity();
-
-        _dbContext.Database.Migrate();
-
-        if (!_dbContext.Users.Any())
+        var RoleAdmin = new IdentityRole<Guid>();
+        var RoleUser = new IdentityRole<Guid>();
+        if (!dbContext.Roles.Any())
         {
-            var users = ReadJSON<List<UserEntity>>(@"Db/UserData.json");
-            foreach (var item in users)
+            var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole<Guid>>>();
+            var roles = GetJson<IdentityRole<Guid>>(@"Db/RoleData.json");
+
+            foreach (var role in roles)
             {
-                if (item.Id == "888a65de-66e7-454a-86ab-fdb800de2d09")
+                role.NormalizedName = role.Name;
+                dbContext.Roles.Add(role);
+                if (role.Name == "Admin")
                 {
-                    loggedUser = item;
+                    RoleAdmin = role;
                 }
-
-                item.Password = BCrypt.Net.BCrypt.HashPassword(item.Password, 11, true);
-                _dbContext.Users.Add(item);
+                else
+                {
+                    RoleUser = role;
+                }
             }
         }
 
-        if (!_dbContext.WhiteListedToken.Any())
+        if (!dbContext.Users.Any())
         {
-            var tokens = ReadJSON<List<JWTTokenEntity>>(@"Db/JWTData.json");
-            foreach (var item in tokens)
+            var userManager = scope.ServiceProvider.GetRequiredService<FinalUserManager>();
+            var passwordHasher = new PasswordHasher<UserEntity>();
+
+            var users = GetJson<UserSeedDTO>(@"Db/UserData.json");
+
+            var mapperConfig = new MapperConfiguration(x =>
             {
-                item.Expires = new DateTime(2603, 10, 11);
-                item.User = loggedUser;
-                _dbContext.WhiteListedToken.Add(item);
+                x.CreateMap<UserSeedDTO, UserEntity>();
+            });
+            var mapper = new Mapper(mapperConfig);
+
+            foreach (var user in users)
+            {
+                var mappedUser = mapper.Map<UserEntity>(user);
+                mappedUser.PasswordHash = passwordHasher.HashPassword(mappedUser, user.Password);
+                mappedUser.NormalizedEmail = mappedUser.Email.ToUpper();
+                mappedUser.NormalizedUserName = mappedUser.Email.ToUpper();
+
+                dbContext.Users.Add(mappedUser);
+
+                var role = dbContext.Roles.FirstOrDefault(x => x.Name == user.Role);
+                var userRole = new IdentityUserRole<Guid>()
+                {
+                    UserId = mappedUser.Id,
+                    RoleId = user.Role == "Admin" ? RoleAdmin.Id : RoleUser.Id,
+                };
+                dbContext.UserRoles.Add(userRole);
+                if (user.Role == "Admin")
+                {
+                    AdminUser = mappedUser;
+                }
+                else
+                {
+                    User = mappedUser;
+                }
             }
         }
-        _dbContext.SaveChanges();
+
+        if (!dbContext.Products.Any())
+        {
+            var categories = GetJson<CategoryEntity>(@"Db/CategoryData.json");
+            var products = GetJson<ProductEntity>(@"Db/ProductData.json");
+
+            foreach (var item in categories)
+            {
+                dbContext.Categories.Add(item);
+            }
+
+            foreach (var item in products)
+            {
+                item.Categories = new();
+                var random = new Random();
+                for (int i = 0; i < random.Next(2, 5); i++)
+                {
+                    var productCategory = new ProductCategoryEntity()
+                    {
+                        Category = categories[random.Next(categories.Count)]
+                    };
+
+                    item.Categories.Add(productCategory);
+                }
+                item.ImgSrc = $"https://source.unsplash.com/random/800x800/?img={random.Next(20)}";
+
+                dbContext.Products.Add(item);
+            }
+
+        }
+
+        dbContext.SaveChanges();
+        Console.WriteLine("Seeding data completed...");
     }
 
-    private T ReadJSON<T>(string path)
+    private static List<T> GetJson<T>(string path)
     {
-        T items;
+        List<T> items = new List<T>();
 
         using (StreamReader r = new StreamReader(path))
         {
             string json = r.ReadToEnd();
-            items = JsonConvert.DeserializeObject<T>(json);
+            items = JsonConvert.DeserializeObject<List<T>>(json);
             return items;
         }
+    }
+
+    public static JWTTokenEntity Create(UserEntity user, string secretKey, string userRole)
+    {
+        var tokenHandler = new JwtSecurityTokenHandler();
+        var key = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(secretKey));
+        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+        var roles = new List<string> { userRole };
+
+        var claims = new List<Claim>
+        {
+            new Claim(JwtRegisteredClaimNames.Email, user.Email),
+            new Claim("fullName", user.FullName),
+            new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
+        };
+
+        foreach (var role in roles)
+        {
+            claims.Add(new Claim(ClaimTypes.Role, role));
+        }
+
+        var token = new JwtSecurityToken(
+            "*",
+            "*",
+            claims,
+            null,
+            DateTime.UtcNow.AddHours(2),
+            creds
+        );
+
+        return new JWTTokenEntity()
+        {
+            Token = tokenHandler.WriteToken(token),
+            Expires = DateTime.UtcNow.AddHours(2),
+        };
     }
 }

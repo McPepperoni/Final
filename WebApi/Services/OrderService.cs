@@ -35,12 +35,12 @@ public class OrderService : BaseService<OrderEntity>, IOrderService
                             .Include(x => x.Cart)
                             .ThenInclude(x => x.CartProducts)
                             .ThenInclude(x => x.Product)
-                            .Where(x => x.Id.ToString() == createOrder.UserId)
+                            .Where(x => x.Id.ToString() == _userId)
                             .FirstOrDefaultAsync();
 
         if (user == null)
         {
-            throw new AppException(HttpStatusCode.NotFound, String.Format(ErrorMessages.NOT_FOUND_ERROR, "User", "id", createOrder.UserId));
+            throw new AppException(HttpStatusCode.NotFound, String.Format(ErrorMessages.NOT_FOUND_ERROR, "User", "id", _userId));
         }
 
         var cartProductsId = new List<string>();

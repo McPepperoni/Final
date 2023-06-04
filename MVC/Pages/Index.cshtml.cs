@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace MVC.Pages;
@@ -15,7 +14,11 @@ public class IndexModel : PageModel
 
     public IActionResult OnGet()
     {
-        return User.Identity.IsAuthenticated ? Redirect("Product") : Redirect("Identity/Account/Login");
+        return User.Identity.IsAuthenticated ?
+                User.IsInRole("User") ?
+                Redirect("Product") :
+                Redirect("Admin") :
+                Redirect("Identity/Account/Login");
     }
 
 }

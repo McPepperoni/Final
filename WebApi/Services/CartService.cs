@@ -11,8 +11,8 @@ namespace WebApi.Services;
 
 public interface ICartService
 {
-    Task CreateAsync(string userId);
-    Task<CartDTO> Get(string userId);
+    Task CreateAsync();
+    Task<CartDTO> Get();
     Task<CartDTO> Update(UpdateCartDTO updateCart);
     Task<CartDTO> Delete(string itemId);
 
@@ -30,13 +30,13 @@ public class CartService : BaseService<CartEntity>, ICartService
         _cartProductDbSet = dbContext.CartProducts;
     }
 
-    public async Task CreateAsync(string userId)
+    public async Task CreateAsync()
     {
-        var user = await _userDbSet.FindAsync(userId);
+        var user = await _userDbSet.FindAsync(_userId);
 
         if (user.Cart != null)
         {
-            throw new AppException(HttpStatusCode.Conflict, String.Format(ErrorMessages.CONFLICTED_ERROR, "Cart", "UserId", userId));
+            throw new AppException(HttpStatusCode.Conflict, String.Format(ErrorMessages.CONFLICTED_ERROR, "Cart", "UserId", _userId));
         }
 
         user.Cart = new CartEntity() { };
@@ -44,10 +44,10 @@ public class CartService : BaseService<CartEntity>, ICartService
         await _dbContext.SaveChangesAsync();
     }
 
-    public async Task<CartDTO> Get(string userId)
+    public async Task<CartDTO> Get()
     {
         var user = await _userDbSet
-        .Where(x => x.Id.ToString() == userId)
+        .Where(x => x.Id.ToString() == _userId)
         .Include(x => x.Cart)
         .ThenInclude(x => x.CartProducts)
         .ThenInclude(x => x.Product)
@@ -55,7 +55,7 @@ public class CartService : BaseService<CartEntity>, ICartService
 
         if (user.Cart == null)
         {
-            throw new AppException(HttpStatusCode.NotFound, String.Format(ErrorMessages.NOT_FOUND_ERROR, "Cart", "UserId", userId));
+            throw new AppException(HttpStatusCode.NotFound, String.Format(ErrorMessages.NOT_FOUND_ERROR, "Cart", "UserId", _userId));
         }
 
         if (user.Cart.CartProducts == null)

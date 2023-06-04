@@ -1,7 +1,5 @@
-using System.Runtime.CompilerServices;
 using AutoMapper;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.OpenApi.Writers;
 using Newtonsoft.Json;
 using Persistence;
 using Persistence.Entities;

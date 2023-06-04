@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
-using WebApi.Contexts;
+using Persistence;
 
 namespace WebApi.Test.Factory;
 

@@ -5,32 +5,7 @@
 @model PageDataDTO
 
 @{
-  var Data = new List<string>();
-
-  if (Model.Page < 3)
-  {
-    for (int i = 0; i < 3; i++)
-    {
-      Data.Add((i + 1).ToString());
-    }
-  }
-  else
-  {
-    Data.Add("1");
-  }
-
-  if (Model.Page < Model.PageCount - 3)
-  {
-    Data.Add("...");
-    Data.Add(Model.PageCount.ToString());
-  }
-  else
-  {
-    for (int i = Model.Page; i < Model.PageCount; i++)
-    {
-      Data.Add((i + 1).ToString());
-    }
-  }
+  var Data = Pagination.GetPagination(Model.Page, Model.PageCount);
 
   // Pagination
   var queryStrings = Pagination.GetQueryString(Context.Request.QueryString.Value, Model.Page);
@@ -43,9 +18,9 @@
     </li>
     @foreach (var item in Data)
     {
-                            <li class="page-item @(item == (Model.Page + 1).ToString() ? "active" : "") @(item == "..." ? "disabled" : "")">
-                              <a class="page-link" href="#">@item</a>
-                            </li>
+        <li class="page-item @(item == (Model.Page).ToString() ? "active" : "") @(item == "..." ? "disabled" : "")">
+          <a class="page-link" href="/Product/">@item</a>
+        </li>
     }
     <li class="page-item @(Model.HasNextPage ? "" : "disabled")">
       <a class="page-link" href="@($"{Context.Request.Path}{queryStrings.NextPage}")" >Next</a>

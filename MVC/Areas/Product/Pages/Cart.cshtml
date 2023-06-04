@@ -8,39 +8,41 @@
 }
 
 <div class="">
-    <div class="bg-light text-dark px-2 py-2 d-flex flex-column justify-content-center pt-5 cart-container">
-      <ul class="list-group cart border mb-2 shadow-sm p-3 rounded">
+    <form method="post" asp-area="Product" asp-page="Cart" asp-page-handler="PlaceOrder" asp-route-itemIds="@(string.Join("," ,Model.Input.CartItems.Select(x => x.Id)))" class="bg-light text-dark px-2 py-2 d-flex flex-column justify-content-center pt-5 cart-container">
+      <ul class="list-group cart border mb-2 shadow-sm p-3 rounded cart-group">
 
-            @foreach (var item in Model.Input.CartItems)
+            @foreach (var (item, i) in Model.Input.CartItems.Select((item, i) => (item, i)))
             {
-                                                                        <li class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
-                                                                            <div class="d-flex justify-content-start align-items-center">
-                                                                                <input type="checkbox" class="cart-item-input" checked>
-                                                                                <div class="img-container">
-                                                                                    <img class="border rounded mx-3" src="@item.Product.ImgSrc" alt="product-profile">
-                                                                                </div>
-                                                                                <div class="item-name">@item.Product.Name</div>
-                                                                            </div>
+                                                                <li class="list-group-item list-group-item-action d-flex justify-content-between align-items-center cart-item">
+                                                                    <div class="d-flex justify-content-start align-items-center">
+                        @Html.CheckBoxFor(x => x.Input.CheckedItems[i].Checked, new {@class = "cart-item-input"})                                                            <div class="img-container">
+                                                                            <img class="border rounded mx-3" src="@item.Product.ImgSrc" alt="product-profile">
+                                                                        </div>
+                                                                        <div class="item-name">@item.Product.Name</div>
+                                                                    </div>
 
-                                                                            <div class="d-flex justify-content-start align-items-center">
-                                                                                <div class="d-flex justify-content-center align-items-center ">
-                                                                                    <input type="number" class="form-control rounded ml-2 mr-2 item-quantity" value="@item.Quantity" min="0"></input>
-                                                                                    <div class="flex flex-column">
-                                                                                        <p class="item-price my-0 mr-2">x @item.Product.Price.ToString("N0") đ</p>
-                                                                                        <p class="item-price-total my-0 mr-2 fw-bold">@((item.Product.Price * item.Quantity).ToString("N0")) đ</p>
-                                                                                    </div>
-                                                                                </div>
-                                                                                <a asp-area="Product" asp-page="/Cart" asp-page-handler="RemoveFromCart" asp-route-itemId="@item.Id" class="btn btn-danger">
-                                                                                    <i class="fa-solid fa-circle-minus"></i>
-                                                                                </a>
-                                                                            </div>
-                                                                        </li>
+                                                                    <div class="d-flex justify-content-start align-items-center">
+                                                                        <div class="d-flex justify-content-center align-items-center ">
+                                                                            <input asp-for="Input.CheckedItems[i].Quantity" type="number" class="form-control rounded ml-2 mr-2 item-quantity" value="@item.Quantity" min="0"></input>
+                                                                            <div class="flex flex-column">
+                                                                                <p class="item-price my-0 mr-2">x @item.Product.Price.ToString("N0") đ</p>
+                                                                                <p class="item-price-total my-0 mr-2 fw-bold">@((item.Product.Price * item.Quantity).ToString("N0")) đ</p>
+                                                                        </div>
+                                                                    </div>
+                                                                    <a asp-area="Product" asp-page="/Cart" asp-page-handler="RemoveFromCart" asp-route-itemId="@item.Id" class="btn btn-danger">
+                                                                        <i class="fa-solid fa-circle-minus"></i>
+                                                                    </a>
+                                                                </div>
+                                                            </li>
             }
       </ul>
-      <div class="w-100 d-flex justify-content-between p-3 p-inline-6 fw-bold">
-        <h4>Total: </h4>
-        <h4>@Model.Input.TotalPrice.ToString("N0") đ</h4>
-      </div>
+        @if (Model.Input.CartItems.Count > 0)
+        {
+                                                                    <div class="w-100 d-flex justify-content-between p-3 p-inline-6 fw-bold">
+                                                                    <h4>Total: </h4>
+                                                                    <h4 id="cart-total-price">@Model.Input.TotalPrice.ToString("N0") đ</h4>
+                                                                  </div>
+        }
       <div class="btn-group">
         <a class="btn btn-secondary mr-3" href="@Model.ReturnURL">
             <i class="fa-solid fa-arrow-left"></i>
@@ -51,5 +53,5 @@
             <i class="fa-solid fa-arrow-right"></i>
         </button>
         </div>
-    </div>
+    </form>
 </div>

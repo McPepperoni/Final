@@ -13,7 +13,7 @@
 <header>
     <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark border-bottom shadow pb-3 pt-3 bg-dark fixed-top">
         <div class="container-fluid d-sm-inline-flex justify-content-between">
-            <a class="navbar-brand d-flex align-items-center" asp-area="" asp-controller="Home" asp-action="Index">
+            <a class="navbar-brand d-flex align-items-center" href="/">
                 <h1 class="ml-2">
                     <i class="fa-solid fa-fire-flame-curved text-danger"></i>
                 </h1>
@@ -40,10 +40,10 @@
                                 </h5>
                             </div>
                             <div class="list-group header-panel p-absolute bg-dark rounded-top mr-2 text-dark">
-                                <a href="/Product/Cart?returnURL=@returnUrl" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                                @if(!User.IsInRole("Admin")){<a href="/Product/Cart?returnURL=@returnUrl" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
                                     <span>Cart</span>
                                     <i class="fa-solid fa-cart-shopping"></i>   
-                                </a>
+                                </a>}
                                 <a href="#" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
                                     <span>Edit profile</span>
                                     <i class="fa-regular fa-pen-to-square"></i>

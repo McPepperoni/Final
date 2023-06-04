@@ -35,7 +35,7 @@ public class UserService : BaseService<UserEntity>, IUserService
 
     public async Task<UserDTO> Get(string id)
     {
-        var user = await _dbSet.FindAsync(id);
+        var user = await _dbSet.FindAsync(new Guid(id));
 
         if (user == null)
         {
@@ -48,17 +48,28 @@ public class UserService : BaseService<UserEntity>, IUserService
     public async Task Create(CreateUserDTO createUser)
     {
         var user = _mapper.Map<UserEntity>(createUser);
+        var existedUser = await _dbSet.FirstOrDefaultAsync(x => x.Email == createUser.Email);
+        if (existedUser != null)
+        {
+            throw new AppException(HttpStatusCode.Conflict, String.Format(ErrorMessages.CONFLICTED_ERROR, "User", "Email", createUser.Email));
+        }
 
         var result = await _userManager.CreateAsync(user, createUser.Password);
+        if (!result.Succeeded)
+        {
+            throw new AppException(HttpStatusCode.BadRequest, string.Join(",", result.Errors));
+        }
+
+        result = await _userManager.AddToRoleAsync(user, "User");
 
         if (!result.Succeeded)
         {
-            throw new AppException(HttpStatusCode.BadRequest, "Registered failed with messages");
+            throw new AppException(HttpStatusCode.BadRequest, string.Join(",", result.Errors));
         }
     }
     public async Task Update(string id, UpdateUserDTO updateUser)
     {
-        var user = await _dbSet.FindAsync(id);
+        var user = await _dbSet.FindAsync(new Guid(id));
         if (user == null)
         {
             throw new AppException(HttpStatusCode.NotFound, String.Format(ErrorMessages.NOT_FOUND_ERROR, "User", "id", id));
@@ -71,12 +82,12 @@ public class UserService : BaseService<UserEntity>, IUserService
 
         await _dbContext.SaveChangesAsync();
     }
-    public async Task Delete(string Id)
+    public async Task Delete(string id)
     {
-        var user = await _dbSet.FindAsync(Id);
+        var user = await _dbSet.FindAsync(new Guid(id));
         if (user == null)
         {
-            throw new AppException(HttpStatusCode.NotFound, String.Format(ErrorMessages.NOT_FOUND_ERROR, "User", "Id", Id));
+            throw new AppException(HttpStatusCode.NotFound, String.Format(ErrorMessages.NOT_FOUND_ERROR, "User", "Id", id));
         }
 
         _dbSet.Remove(user);

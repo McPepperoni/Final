@@ -1,0 +1,41 @@
+@using MVC.DTOs
+@model List<DisplayListDTO>
+
+<a href="/Admin/@ViewData["Route"]/Add" class="btn btn-success mb-4 add-item-button shadow">
+  <i class="fa-solid fa-circle-plus"></i>
+  <span>Add @ViewData["Route"]</span>
+</a>
+<div class="w-100 items-container d-flex flex-column align-items-center">
+  <ul class="list-group w-100 px-5">
+    @foreach (var (item, i) in Model.Select((x, i) => (x, i)))
+    {
+    <li class="list-group-item d-flex justify-content-between align-items-center">
+      <div class="item-info d-flex align-items-center">
+        <h4 class="mr-2">@(i + 1)</h4>
+        <div class="img-container rounded border p-1 item-img">
+            <img
+            src="https://source.unsplash.com/random/800x800/?img=2"
+            alt="profile-img" class="">
+        </div>
+        <div class="d-flex flex-column mx-3 justify-content-center">
+            <p class="item-id m-0 opacity-50 text-sm">@item.Id</p>
+            <h2>@item.Name</h2>
+            <p class="item-id m-0 opacity-50 text-sm">
+              <strong>Last modified:</strong> @item.ModifiedAt.ToLongTimeString()
+            </p>
+        </div>
+      </div>
+      <div class="actions-container h-100 d-flex align-items-center">
+        <a href="/Admin/@ViewData["Route"]/Edit?Id=@item.Id" class="btn btn-warning mx-3">
+          <i class="fa-regular fa-pen-to-square"></i>
+        </a>
+        <a class="btn btn-danger" asp-route-id="@item.Id" asp-page-handler="Delete">
+          <i class="fa-solid fa-circle-minus"></i>
+        </a>
+      </div>
+    </li>
+    }
+  </ul>
+</div>
+
+

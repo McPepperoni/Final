@@ -22,7 +22,7 @@ public class CartItemController : BaseController
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(CartDTO))]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [HttpPost("{userId}")]
-    public async Task<IActionResult> AddToCart([FromQuery] string userId, [FromBody] AddToCartDTO addToCart)
-    => Ok(await _cartItemService.AddToCart(userId, addToCart));
+    [HttpPost]
+    public async Task<IActionResult> AddToCart([FromBody] AddToCartDTO addToCart)
+    => Ok(await _cartItemService.AddToCart(addToCart));
 }

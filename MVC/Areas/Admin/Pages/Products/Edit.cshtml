@@ -1,0 +1,72 @@
+@page
+@using MVC.Areas.Admin.Pages.Products
+@model EditModel
+
+@{
+    ViewData["Title"] = "Products add";
+}
+
+<div class="d-flex justify-content-center align-items-center flex-column w-100 mt-5">
+  <div class="d-flex w-100 edit-container mt-5 border rounded p-5">
+    <div class="d-flex flex-column w-50">
+        <div class="w-100 rounded p-1 item-img p-5">
+            <img
+            src="~/assets/cover.jpg"
+            alt="profile-img" class="rounded shadow">
+        </div>
+    </div>
+    <form class="flex flex-column w-50" method="post" id="user-add-form" asp-route-id="@Model.Product.Id" asp-route-categoryIds="@(string.Join(",",Model.Input.Categories.Select(x => x.Id)))">
+        <div class="d-flex flex-column mx-3 justify-content-center h-100">
+            @Html.ValidationMessage("Existed", new{@class = "text-danger mb-3"})
+            <div class="d-flex flex-column mb-5">
+                <div class="mb-3 d-flex flex-column">
+                    <div class="input-group d-flex w-100">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text" id="basic-addon1">Name</span>
+                        </div>
+                        <input required asp-for="Input.Product.Name" value="@Model.Product.Name" type="text" class="form-control" placeholder="Name" aria-label="Address" aria-describedby="basic-addon1" id="name-input">
+                    </div>
+                    <span asp-validation-for="Input.Product.Name" class="text-danger"></span>
+                </div>
+                <div class="mb-3 d-flex flex-column">
+                    <div class="input-group d-flex w-100">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text" id="basic-addon1">Price</span>
+                        </div>
+                        <input required asp-for="Input.Product.Price" value="@Model.Product.Price" type="text" class="form-control" placeholder="Price" aria-label="Address" aria-describedby="basic-addon1" id="name-input">
+                    </div>
+                    <span asp-validation-for="Input.Product.Price" class="text-danger"></span>
+                </div>
+                <div class="mb-3 d-flex flex-column">
+                    <div class="input-group d-flex w-100">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text" id="basic-addon1">Quantity</span>
+                        </div>
+                        <input required asp-for="Input.Product.Quantity" value="@Model.Product.Quantity" type="text" class="form-control" placeholder="Quantity" aria-label="Address" aria-describedby="basic-addon1" id="name-input">
+                    </div>
+                    <span asp-validation-for="Input.Product.Quantity" class="text-danger"></span>
+                </div>
+                <ul class="mb-3 d-flex flex-column list-group categories border rounded">
+                        @foreach (var (item, i) in Model.Input.Categories.Select((x, i) => (x, i)))
+                        {
+                            <li class="input-group d-flex w-100 list-group-item">
+                                @Html.CheckBoxFor(x => x.Input.Categories[i].Checked)
+                                <span class="mx-2">@item.Name</span>
+                            </li>
+                        }
+                </ul>
+            </div>
+            <div class="d-flex flex-column" >
+                <div class="d-flex">
+                    <button type="submit" class="btn btn-success w-fit mt-5" id="">Add</button>
+                    <a href="/Admin/Products" class="btn btn-danger w-fit mt-5 mx-3">Cancel</a>
+                </div>
+            </div>
+        </div>
+    </form>
+  </div>
+</div>
+
+@section Scripts {
+                <partial name="_ValidationScriptsPartial" />
+}

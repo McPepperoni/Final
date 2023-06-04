@@ -12,7 +12,7 @@ namespace WebApi.Services;
 public interface ICartItemService
 {
     Task<CartDTO> RemoveFromCart(string id);
-    Task<CartDTO> AddToCart(string userId, AddToCartDTO addToCart);
+    Task<CartDTO> AddToCart(AddToCartDTO addToCart);
 }
 
 public class CartItemService : BaseService<CartEntity>, ICartItemService
@@ -41,18 +41,18 @@ public class CartItemService : BaseService<CartEntity>, ICartItemService
         return _mapper.Map<CartDTO>(item.Cart);
     }
 
-    public async Task<CartDTO> AddToCart(string userId, AddToCartDTO addToCart)
+    public async Task<CartDTO> AddToCart(AddToCartDTO addToCart)
     {
         var user = await _userDbSet
                         .Include(x => x.Cart)
                         .ThenInclude(x => x.CartProducts)
                         .ThenInclude(x => x.Product)
-                        .Where(x => x.Id.ToString() == userId)
+                        .Where(x => x.Id.ToString() == _userId)
                         .FirstOrDefaultAsync();
 
         if (user == null)
         {
-            throw new AppException(HttpStatusCode.NotFound, String.Format(ErrorMessages.NOT_FOUND_ERROR, "User", "Id", userId));
+            throw new AppException(HttpStatusCode.NotFound, String.Format(ErrorMessages.NOT_FOUND_ERROR, "User", "Id", _userId));
         }
 
         var product = await _productDbSet

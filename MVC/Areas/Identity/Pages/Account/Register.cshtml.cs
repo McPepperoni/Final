@@ -7,6 +7,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using MVC.DTOs;
 using Persistence.Entities;
 using Persistence.Managers;
 
@@ -14,22 +15,20 @@ namespace MVC.Areas.Identity.Pages.Account
 {
     public class RegisterModel : PageModel
     {
-        private readonly FinalSignInManager _signInManager;
-        private readonly FinalUserManager _userManager;
+
         private readonly ILogger<RegisterModel> _logger;
         private readonly IMapper _mapper;
+        private readonly HttpClient _client;
 
         public RegisterModel(
-            FinalUserManager userManager,
-            FinalSignInManager signInManager,
             ILogger<RegisterModel> logger,
-            IMapper mapper
+            IMapper mapper,
+            IHttpClientFactory factory
         )
         {
-            _userManager = userManager;
-            _signInManager = signInManager;
             _logger = logger;
             _mapper = mapper;
+            _client = factory.CreateClient("ProductAPIClient");
         }
 
         /// <summary>
@@ -57,65 +56,28 @@ namespace MVC.Areas.Identity.Pages.Account
         /// </summary>
         public class InputModel
         {
-            /// <summary>
-            ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-            ///     directly from your code. This API may change or be removed in future releases.
-            /// </summary>
-            [Required]
-            [EmailAddress]
-            [Display(Name = "Email")]
-            public string Email { get; set; }
-
-            /// <summary>
-            ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-            ///     directly from your code. This API may change or be removed in future releases.
-            /// </summary>
-            [Required]
-            [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
-            [DataType(DataType.Password)]
-            [Display(Name = "Password")]
-            public string Password { get; set; }
-
-            /// <summary>
-            ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-            ///     directly from your code. This API may change or be removed in future releases.
-            /// </summary>
-            [DataType(DataType.Password)]
-            [Display(Name = "Confirm password")]
-            [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
-            public string ConfirmPassword { get; set; }
-            [Required]
-            public string FullName { get; set; }
-            [Required]
-            public string Address { get; set; }
+            public CreateUserDTO User { get; set; }
         }
 
 
-        public async Task OnGetAsync(string returnUrl = null)
+        public void OnGet(string returnUrl = null)
         {
-            ReturnUrl = returnUrl;
-            ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
+            ReturnUrl = returnUrl ?? "/Identity/Account/Login";
         }
 
         public async Task<IActionResult> OnPostAsync(string returnUrl = null)
         {
-            returnUrl ??= Url.Content("~/");
+            returnUrl ??= "/Identity/User/Login";
 
             if (ModelState.IsValid)
             {
-                var user = _mapper.Map<UserEntity>(Input);
+                var response = await _client.PostAsJsonAsync("User", Input.User);
 
-                var result = await _userManager.CreateAsync(user, Input.Password);
-
-                if (result.Succeeded)
+                if (response.IsSuccessStatusCode)
                 {
-                    return RedirectToPage("Login");
+                    return Redirect(ReturnUrl);
                 }
-
-                foreach (var error in result.Errors)
-                {
-                    ModelState.AddModelError(string.Empty, error.Description);
-                }
+                ModelState.AddModelError("Input.Email", (await response.Content.ReadFromJsonAsync<ErrorDTO>()).Message);
             }
 
             // If we got this far, something failed, redisplay form

@@ -1,0 +1,16 @@
+@page 
+@using MVC.Areas.Admin.Pages.Categories
+
+@model IndexModel
+
+@{
+    ViewData["Title"] = "Admin - Categories";
+    ViewData["Route"] = "Categories";
+}
+
+<div class="d-flex">
+    @await Html.PartialAsync("../Partials/_categories.cshtml")
+    <div class="w-100 h-100 d-flex justify-content-center align-items-center my-5">
+    @await Html.PartialAsync("../Partials/_itemList.cshtml", Model.Input.Categories, ViewData)
+    </div>
+</div>

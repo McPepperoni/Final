@@ -497,7 +497,8 @@ namespace Persistence.Data.Migrations
                 {
                     b.HasOne("Persistence.Entities.UserEntity", null)
                         .WithOne("Cart")
-                        .HasForeignKey("Persistence.Entities.CartEntity", "UserEntityId");
+                        .HasForeignKey("Persistence.Entities.CartEntity", "UserEntityId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("Persistence.Entities.CartProductEntity", b =>

@@ -1,0 +1,21 @@
+.items-container {
+  max-width: 1500px;
+}
+
+.item-img {
+  width: 96px;
+  aspect-ratio: 1;
+}
+
+.item-img img {
+  width: 100%;
+  object-fit: cover;
+}
+
+.add-item-button {
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  margin-right: 2rem;
+  z-index: 99;
+}

@@ -13,6 +13,7 @@ builder.Services.AddSingleton<AppSettings>();
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 builder.Services.AddAutoMapper(typeof(Program));
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddHttpClients();
 
 builder.Services.AddDefaultIdentity<UserEntity>()
@@ -41,10 +42,10 @@ if (app.Environment.IsDevelopment())
 }
 else
 {
-    app.UseExceptionHandler("/Error");
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
+app.UseExceptionHandler("/Error");
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();

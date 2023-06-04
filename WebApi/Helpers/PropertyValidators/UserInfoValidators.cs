@@ -6,7 +6,7 @@ public static class UserInfoValidators
            PhoneNumber<T>(this IRuleBuilder<T, string> ruleBuilder)
     {
         return ruleBuilder.NotEmpty()
-        .Matches(@"^0\d{3}\.\d{3}\.\d{3}").WithMessage("Phonenumber does not match format");
+        .Matches(@"^0\d{3}\d{3}\d{3}").WithMessage("Phonenumber does not match format");
     }
 
     public static IRuleBuilderOptions<T, string> Name<T>(this IRuleBuilder<T, string> ruleBuilder)

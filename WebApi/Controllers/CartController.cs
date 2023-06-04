@@ -15,19 +15,19 @@ public class CartController : BaseController
 
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(CartDTO))]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [HttpGet("{userId}")]
-    public async Task<IActionResult> Get(string userId)
+    [HttpGet]
+    public async Task<IActionResult> Get()
     {
-        var res = await _cartService.Get(userId);
+        var res = await _cartService.Get();
         return Ok(res);
     }
 
     [ProducesResponseType(StatusCodes.Status409Conflict)]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(CartDTO))]
-    [HttpPost("{userId}")]
-    public async Task Create(string userId)
+    [HttpPost]
+    public async Task Create()
     {
-        await _cartService.CreateAsync(userId);
+        await _cartService.CreateAsync();
         NoContent();
     }
 

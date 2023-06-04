@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WebApi.DTOs;
 
@@ -23,6 +24,7 @@ public class ProductsController : BaseController
     public async Task<IActionResult> Get(string id)
     => Ok(await _productService.Get(id));
 
+    [Authorize(Roles = "Admin")]
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ProductDTO))]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
@@ -30,6 +32,7 @@ public class ProductsController : BaseController
     public async Task<IActionResult> Create([FromBody] ProductCreateDTO productCreate)
     => Ok(await _productService.Create(productCreate));
 
+    [Authorize(Roles = "Admin")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ProductDTO))]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -37,6 +40,7 @@ public class ProductsController : BaseController
     public async Task<IActionResult> Update(string id, [FromBody] ProductUpdateDTO productUpdate)
     => Ok(await _productService.Update(id, productUpdate));
 
+    [Authorize(Roles = "Admin")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ProductDTO))]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [HttpDelete("{id}")]

@@ -10,7 +10,6 @@ public class OrderDTO : BaseDTO
 
 public class CreateOrderDTO
 {
-    public string UserId { get; set; }
     public List<CreateOrderProductDTO> Products { get; set; }
 }
 
@@ -18,8 +17,5 @@ public class CreateOrderDTOValidator : AbstractValidator<CreateOrderDTO>
 {
     public CreateOrderDTOValidator()
     {
-        RuleFor(x => x.UserId)
-        .NotEmpty().WithMessage("UserId is required")
-        .Length(36).WithMessage("Incorrect format for UserId");
     }
 }

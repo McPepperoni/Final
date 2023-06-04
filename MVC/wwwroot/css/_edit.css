@@ -1,0 +1,31 @@
+.edit-container {
+  max-width: 1200px;
+}
+
+.w-fit {
+  width: fit-content !important;
+}
+
+.opacity-50 {
+  opacity: 0.5;
+}
+.opacity-25 {
+  opacity: 0.25;
+}
+.opacity-75 {
+  opacity: 0.75;
+}
+
+.text-sm {
+  font-size: 0.75em;
+}
+
+.item-img img {
+  width: 100%;
+  aspect-ratio: 1;
+}
+
+.categories {
+  max-height: 150px;
+  overflow-y: scroll;
+}

@@ -10,9 +10,8 @@ using MVC.DTOs;
 namespace MVC.Areas.Product;
 
 [Authorize(Roles = "User")]
-public class IndexModel : PageModel
+public class IndexModel : BaseAuthorizedPageModel
 {
-    private readonly HttpClient _client;
     public ProductPaginationResponseDTO Data { get; set; }
 
     public string Title { get; set; }
@@ -52,9 +51,8 @@ public class IndexModel : PageModel
         }
     }
 
-    public IndexModel(IHttpClientFactory factory)
+    public IndexModel(IHttpClientFactory factory, IHttpContextAccessor contextAccessor) : base(factory, contextAccessor)
     {
-        _client = factory.CreateClient("ProductAPIClient");
     }
 
     public async Task OnGetAsync()

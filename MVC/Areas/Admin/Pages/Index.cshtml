@@ -1,3 +1,16 @@
 @page
 @using MVC.Areas.Admin
 @model IndexModel
+
+@{
+    ViewData["Title"] = "Admin";
+}
+
+<div class="d-flex">
+    @await Html.PartialAsync("Partials/_categories.cshtml")
+    <div class="w-100 h-100 d-flex justify-content-center align-items-center my-5">
+        <h2>
+            Please select a category
+        </h2>
+    </div>
+</div>

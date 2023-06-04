@@ -27,7 +27,8 @@ public class ApplicationDbContext : IdentityDbContext<UserEntity, IdentityRole<G
         builder.Entity<UserEntity>()
         .HasOne(x => x.Cart)
         .WithOne()
-        .HasForeignKey<CartEntity>();
+        .HasForeignKey<CartEntity>()
+        .OnDelete(DeleteBehavior.Cascade);
 
         // Category
         builder.Entity<CategoryEntity>()

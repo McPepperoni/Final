@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - FrontEnd</title>
+    <title>@ViewData["Title"]</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link
@@ -18,9 +18,15 @@
       asp-append-version="true"
     />
     <link rel="stylesheet" href="~/css/_cart.css" asp-append-version="true" />
+    <link
+      rel="stylesheet"
+      href="~/css/_adminItems.css"
+      asp-append-version="true"
+    />
+    <link rel="stylesheet" href="~/css/_edit.css" asp-append-version="true" />
   </head>
   <body class="bg-light">
-    @await Html.PartialAsync("_header.cshtml")
+  @await Html.PartialAsync("_header.cshtml")
     <div class="pl-0 ml-0">
       <main role="main" class="pb-3 w-100 full-cover">@RenderBody()</main>
     </div>
@@ -38,7 +44,8 @@
       src="https://kit.fontawesome.com/7efba6be8d.js"
       crossorigin="anonymous"
     ></script>
-    @await RenderSectionAsync("Scripts", required: false)
+  @await RenderSectionAsync("Scripts", required: false)
   </body>
 </html>
+
 

@@ -45,6 +45,7 @@ public class UserController : BaseController
         return NoContent();
     }
 
+    [Authorize(Roles = "Admin")]
     [HttpDelete("{id:length(36)}")]
     [ProducesResponseType(StatusCodes.Status204NoContent, Type = typeof(UserDTO))]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
