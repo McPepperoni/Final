@@ -1,9 +1,6 @@
-using System.ComponentModel.DataAnnotations;
-using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using MVC.Constants;
 using MVC.DTOs;
 
 namespace MVC.Areas.Admin.Pages.Users;

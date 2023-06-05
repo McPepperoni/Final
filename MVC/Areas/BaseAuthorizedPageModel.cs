@@ -12,6 +12,6 @@ public class BaseAuthorizedPageModel : PageModel
     public BaseAuthorizedPageModel(IHttpClientFactory factory, IHttpContextAccessor contextAccessor)
     {
         _client = factory.CreateClient("ProductAPIClient");
-        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", contextAccessor.HttpContext.User.Claims.Where(x => x.Type == "JWT").FirstOrDefault().Value);
+        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", contextAccessor.HttpContext.User.Claims.FirstOrDefault(x => x.Type == "JWT").Value);
     }
 }

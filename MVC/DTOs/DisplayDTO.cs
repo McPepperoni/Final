@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace MVC.DTOs;
 
 public class DisplayListDTO

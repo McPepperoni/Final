@@ -40,10 +40,7 @@ public class CartModel : BaseAuthorizedPageModel
     {
         ReturnURL = returnURL == null ? "/Product" : returnURL;
 
-        var UserId = User.Claims.Where(x => x.Type == JwtRegisteredClaimNames.Sub).FirstOrDefault().Value;
-        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", User.Claims.Where(x => x.Type == "JWT").FirstOrDefault().Value);
-
-        var response = await _client.GetAsync($"Cart/{UserId}");
+        var response = await _client.GetAsync($"Cart");
         var cart = await response.Content.ReadFromJsonAsync<CartDTO>();
         var checkedItems = new List<InputModel.CartItem>();
         foreach (var item in cart.CartProducts)
@@ -89,7 +86,7 @@ public class CartModel : BaseAuthorizedPageModel
             }
         }
 
-        await _client.PostAsJsonAsync("/Order", requestBody);
+        var response = await _client.PostAsJsonAsync("Order", requestBody);
 
         return RedirectToPage();
     }

@@ -1,10 +1,12 @@
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using MVC.DTOs;
 
 namespace MVC.Areas.Admin.Pages.Products;
 
+[Authorize(Roles = "Admin")]
 public class IndexModel : BaseAuthorizedPageModel
 {
     private readonly IMapper _mapper;

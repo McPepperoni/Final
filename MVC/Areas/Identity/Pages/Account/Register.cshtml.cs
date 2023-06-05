@@ -13,47 +13,30 @@ using Persistence.Managers;
 
 namespace MVC.Areas.Identity.Pages.Account
 {
-    public class RegisterModel : PageModel
+    public class RegisterModel : BasePageModel
     {
 
         private readonly ILogger<RegisterModel> _logger;
         private readonly IMapper _mapper;
-        private readonly HttpClient _client;
 
         public RegisterModel(
             ILogger<RegisterModel> logger,
             IMapper mapper,
-            IHttpClientFactory factory
-        )
+            IHttpClientFactory factory,
+            IHttpContextAccessor accessor
+        ) : base(factory, accessor)
         {
             _logger = logger;
             _mapper = mapper;
-            _client = factory.CreateClient("ProductAPIClient");
         }
 
-        /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
         [BindProperty]
         public InputModel Input { get; set; }
 
-        /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
         public string ReturnUrl { get; set; }
 
-        /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
         public IList<AuthenticationScheme> ExternalLogins { get; set; }
 
-        /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
         public class InputModel
         {
             public CreateUserDTO User { get; set; }
@@ -80,7 +63,6 @@ namespace MVC.Areas.Identity.Pages.Account
                 ModelState.AddModelError("Input.Email", (await response.Content.ReadFromJsonAsync<ErrorDTO>()).Message);
             }
 
-            // If we got this far, something failed, redisplay form
             return Page();
         }
     }

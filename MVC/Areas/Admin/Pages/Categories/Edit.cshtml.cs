@@ -3,7 +3,6 @@ using System.Net;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
-using MVC.Constants;
 using MVC.DTOs;
 using Newtonsoft.Json;
 
@@ -37,7 +36,8 @@ public class EditModel : BaseAuthorizedPageModel
             var response = await _client.PutAsJsonAsync($"Category/{id}", Input.Category);
             if (response.StatusCode == HttpStatusCode.Conflict)
             {
-                ModelState.AddModelError("Existed", String.Format(ErrorMessages.CONFLICTED_ERROR, "Category", "Name", Input.Category.Name));
+                var error = await response.Content.ReadFromJsonAsync<ErrorDTO>();
+                ModelState.AddModelError("Existed", error.Message);
                 return RedirectToPage();
             }
             if (!response.IsSuccessStatusCode)

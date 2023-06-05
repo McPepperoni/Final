@@ -17,17 +17,15 @@ using Persistence.Managers;
 
 namespace MVC.Areas.Identity.Pages.Account
 {
-    public class LoginModel : PageModel
+    public class LoginModel : BasePageModel
     {
         private readonly FinalSignInManager _signInManager;
         private readonly ILogger<LoginModel> _logger;
-        private readonly HttpClient _client;
 
-        public LoginModel(FinalSignInManager signInManager, ILogger<LoginModel> logger, IHttpClientFactory client)
+        public LoginModel(FinalSignInManager signInManager, ILogger<LoginModel> logger, IHttpClientFactory factory, IHttpContextAccessor accessor) : base(factory, accessor)
         {
             _signInManager = signInManager;
             _logger = logger;
-            _client = client.CreateClient("ProductAPIClient");
         }
 
         [BindProperty]
@@ -83,7 +81,6 @@ namespace MVC.Areas.Identity.Pages.Account
                 if (response.StatusCode == HttpStatusCode.OK)
                 {
                     var content = await response.Content.ReadFromJsonAsync<AuthTokenResultDTO>();
-                    // HttpContext.Session.Set("Auth-token", Encoding.UTF8.GetBytes(token.Token));
 
                     var handler = new JwtSecurityTokenHandler();
 

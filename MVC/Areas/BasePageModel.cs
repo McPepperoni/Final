@@ -7,7 +7,7 @@ public class BasePageModel : PageModel
 {
     protected readonly HttpClient _client;
 
-    public BasePageModel(IHttpClientFactory factory, HttpContextAccessor contextAccessor)
+    public BasePageModel(IHttpClientFactory factory, IHttpContextAccessor contextAccessor)
     {
         _client = factory.CreateClient("ProductAPIClient");
     }

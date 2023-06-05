@@ -1,5 +1,4 @@
 using System.IdentityModel.Tokens.Jwt;
-using System.Net.Http.Json;
 using System.Security.Claims;
 using System.Text;
 using AutoMapper;
@@ -11,12 +10,8 @@ using Newtonsoft.Json;
 using Persistence;
 using Persistence.Entities;
 using Persistence.Managers;
-using WebApi.DTOs;
-using WebApi.Helpers.DataSeeding;
-using WebApi.Helpers.JWT;
 using WebApi.Settings;
 using WebApi.Test.Factory;
-using WebApi.Test.MappingProfiles;
 
 namespace WebApi.Test.ClassFixture;
 
@@ -24,7 +19,6 @@ public class TestClassFixture : IClassFixture<TestWebApplicationFactory<Program>
 {
     protected readonly TestWebApplicationFactory<Program> _factory;
     protected readonly HttpClient _client;
-    protected readonly IMapper _mapper;
     protected UserEntity AdminUser;
     protected UserEntity User;
     protected readonly string _JWTKey;
@@ -49,14 +43,8 @@ public class TestClassFixture : IClassFixture<TestWebApplicationFactory<Program>
 
         _JWTKey = settings.JWT.Key;
 
-        var mapperConfig = new MapperConfiguration(cfg =>
-        {
-            cfg.AddProfile(new UserControllerProfile());
-        });
-
         _client = _factory.CreateClient();
         _client.BaseAddress = new Uri(_client.BaseAddress.ToString() + "api/v1/");
-        _mapper = new Mapper(mapperConfig);
         SeedData();
     }
 

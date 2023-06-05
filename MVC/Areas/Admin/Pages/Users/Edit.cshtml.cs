@@ -10,9 +10,10 @@ public class EditModel : BaseAuthorizedPageModel
 {
     [BindProperty]
     public InputModel Input { get; set; }
+    public UserDTO UserData { get; set; }
     public class InputModel
     {
-        public UserDTO User { get; set; }
+        public UpdateUserDTO User { get; set; }
     }
     public EditModel(IHttpClientFactory factory, IHttpContextAccessor accessor) : base(factory, accessor)
     {
@@ -20,11 +21,7 @@ public class EditModel : BaseAuthorizedPageModel
     public async Task OnGetAsync(string id)
     {
         var response = await _client.GetAsync($"User/{id}");
-        var user = await response.Content.ReadFromJsonAsync<UserDTO>();
-        Input = new InputModel
-        {
-            User = user,
-        };
+        UserData = await response.Content.ReadFromJsonAsync<UserDTO>();
     }
 
     public async Task<IActionResult> OnPostAsync(string id)

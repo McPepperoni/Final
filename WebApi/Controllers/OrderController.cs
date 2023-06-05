@@ -13,12 +13,15 @@ public class OrderController : BaseController
         _orderService = orderService;
     }
 
-    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(OrderDTO))]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [HttpPost]
     public async Task<IActionResult> Create(CreateOrderDTO createOrder)
-    => Ok(await _orderService.Create(createOrder));
+    {
+        await _orderService.Create(createOrder);
+        return NoContent();
+    }
 
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]

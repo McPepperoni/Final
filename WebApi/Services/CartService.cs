@@ -11,11 +11,8 @@ namespace WebApi.Services;
 
 public interface ICartService
 {
-    Task CreateAsync();
     Task<CartDTO> Get();
     Task<CartDTO> Update(UpdateCartDTO updateCart);
-    Task<CartDTO> Delete(string itemId);
-
 }
 
 public class CartService : BaseService<CartEntity>, ICartService
@@ -28,20 +25,6 @@ public class CartService : BaseService<CartEntity>, ICartService
         _userDbSet = dbContext.Users;
         _productDbSet = dbContext.Products;
         _cartProductDbSet = dbContext.CartProducts;
-    }
-
-    public async Task CreateAsync()
-    {
-        var user = await _userDbSet.FindAsync(_userId);
-
-        if (user.Cart != null)
-        {
-            throw new AppException(HttpStatusCode.Conflict, String.Format(ErrorMessages.CONFLICTED_ERROR, "Cart", "UserId", _userId));
-        }
-
-        user.Cart = new CartEntity() { };
-
-        await _dbContext.SaveChangesAsync();
     }
 
     public async Task<CartDTO> Get()
@@ -67,7 +50,18 @@ public class CartService : BaseService<CartEntity>, ICartService
 
     public async Task<CartDTO> Update(UpdateCartDTO updateCart)
     {
-        var cart = await _dbSet.FindAsync(updateCart.Id);
+        var user = await _userDbSet
+        .Where(x => x.Id.ToString() == _userId)
+        .Include(x => x.Cart)
+        .ThenInclude(x => x.CartProducts)
+        .ThenInclude(x => x.Product)
+        .FirstOrDefaultAsync();
+
+        var cart = user.Cart;
+        if (cart == null)
+        {
+            throw new AppException(HttpStatusCode.NotFound, String.Format(ErrorMessages.NOT_FOUND_ERROR, "Cart", "UserId", _userId));
+        }
 
         foreach (var item in updateCart.Instruction)
         {
@@ -96,20 +90,5 @@ public class CartService : BaseService<CartEntity>, ICartService
         }
 
         return _mapper.Map<CartDTO>(cart);
-    }
-
-    public async Task<CartDTO> Delete(string itemId)
-    {
-        var cartItem = await _cartProductDbSet.FindAsync(itemId);
-
-        if (cartItem == null)
-        {
-            throw new AppException(HttpStatusCode.NotFound, String.Format(ErrorMessages.NOT_FOUND_ERROR, "Cart Item", "Id", itemId));
-        }
-        var cart = cartItem.Cart;
-
-        _cartProductDbSet.Remove(cartItem);
-
-        return _mapper.Map<CartEntity, CartDTO>(cart);
     }
 }

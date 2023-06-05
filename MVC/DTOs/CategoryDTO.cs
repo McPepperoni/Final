@@ -11,11 +11,11 @@ public class CategoryDTO : BaseDTO
 public class CreateCategoryDTO
 {
     [Required]
-    [DisplayName("Name")]
     public string Name { get; set; }
 }
 
 public class UpdateCategoryDTO
 {
+    [Required]
     public string Name { get; set; }
 }

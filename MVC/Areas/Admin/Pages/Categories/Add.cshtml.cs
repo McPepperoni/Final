@@ -2,7 +2,6 @@ using System.ComponentModel.DataAnnotations;
 using System.Net;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using MVC.Constants;
 using MVC.DTOs;
 
 namespace MVC.Areas.Admin.Pages.Categories;

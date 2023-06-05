@@ -57,7 +57,6 @@ public class IndexModel : BaseAuthorizedPageModel
 
     public async Task OnGetAsync()
     {
-        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", User.Claims.Where(x => x.Type == "JWT").FirstOrDefault().Value);
         var queryString = System.Web.HttpUtility.ParseQueryString(string.Empty);
         queryString.Add("SearchTerm", Query);
         queryString.Add("Page", CurrentPage.ToString());
@@ -139,8 +138,6 @@ public class IndexModel : BaseAuthorizedPageModel
 
     public async Task<IActionResult> OnPostAddToCartAsync(string id)
     {
-        var userId = User.Claims.Where(x => x.Type == JwtRegisteredClaimNames.Sub).FirstOrDefault().Value;
-        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", User.Claims.Where(x => x.Type == "JWT").FirstOrDefault().Value);
 
         var requestBody = new AddToCartDTO()
         {
@@ -148,7 +145,7 @@ public class IndexModel : BaseAuthorizedPageModel
             Quantity = Input.ProductsQuantity,
         };
 
-        var response = await _client.PostAsJsonAsync($"CartItem/AddToCart?userId={userId}", requestBody);
+        var response = await _client.PostAsJsonAsync($"CartItem", requestBody);
 
         return RedirectToPage();
     }

@@ -22,20 +22,9 @@ public class CartController : BaseController
         return Ok(res);
     }
 
-    [ProducesResponseType(StatusCodes.Status409Conflict)]
-    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(CartDTO))]
-    [HttpPost]
-    public async Task Create()
-    {
-        await _cartService.CreateAsync();
-        NoContent();
-    }
-
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(CartDTO))]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [HttpPut]
     public async Task<IActionResult> Update(UpdateCartDTO updateCart)
     => Ok(await _cartService.Update(updateCart));
-
-
 }

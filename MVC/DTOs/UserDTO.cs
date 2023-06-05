@@ -31,10 +31,11 @@ public class CreateUserDTO
     [DataType(DataType.Password)]
     [Display(Name = "Confirm password")]
     [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
+    [MinLength(6)]
     public string ConfirmPassword { get; set; }
     public string UserName { get; set; }
     [Required]
-    [RegularExpression(@"^\d*$")]
+    [RegularExpression(@"^\d*$", ErrorMessage = "Phone number is wrong")]
     public string PhoneNumber { get; set; }
     [Required]
     public string FullName { get; set; }
@@ -44,8 +45,12 @@ public class CreateUserDTO
 
 public class UpdateUserDTO
 {
+    [Required]
     public string Email { get; set; }
+    [Required]
     public string FullName { get; set; }
+    [Required]
     public string PhoneNumber { get; set; }
+    [Required]
     public string Address { get; set; }
 }

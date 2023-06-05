@@ -15,21 +15,21 @@
             alt="profile-img" class="rounded shadow">
         </div>
     </div>
-    <form class="flex flex-column w-50" method="post" id="user-edit-form" asp-route-id="@Model.Input.User.Id">
+    <form class="flex flex-column w-50" method="post" id="user-edit-form" asp-route-id="@Model.UserData.Id">
         <div class="d-flex flex-column mx-3 justify-content-center h-100">
             <div class="d-flex flex-column mb-5">
                 <div class="input-group mb-3">
                     <div class="input-group-prepend">
                         <span class="input-group-text" id="basic-addon1">Id</span>
                     </div>
-                    <input required asp-for="Input.User.Id" value="@Model.Input.User.Id" type="text" class="form-control" disabled placeholder="Id" aria-label="Id" aria-describedby="basic-addon1">
+                    <input required value="@Model.UserData.Id" type="text" class="form-control" disabled placeholder="Id" aria-label="Id" aria-describedby="basic-addon1">
                 </div>
                 <div class="mb-3 d-flex flex-column">
                     <div class="input-group d-flex w-100">
                         <div class="input-group-prepend">
                             <span class="input-group-text" id="basic-addon1">Email</span>
                         </div>
-                        <input required asp-for="Input.User.Email" value="@Model.Input.User.Email" type="email" class="form-control" placeholder="Email" aria-label="Address" aria-describedby="basic-addon1" id="email-input">
+                        <input required asp-for="Input.User.Email" value="@Model.UserData.Email" type="email" class="form-control" placeholder="Email" aria-label="Address" aria-describedby="basic-addon1" id="email-input">
                     </div>
                     <span asp-validation-for="Input.User.Email" class="text-danger"></span>
                 </div>
@@ -38,7 +38,7 @@
                         <div class="input-group-prepend">
                             <span class="input-group-text" id="basic-addon1">Full Name</span>
                         </div>
-                        <input required asp-for="Input.User.FullName" value="@Model.Input.User.FullName" type="text" class="form-control" placeholder="Fullname" aria-label="Fullname" aria-describedby="basic-addon1" id="full-name-input">
+                        <input required asp-for="Input.User.FullName" value="@Model.UserData.FullName" type="text" class="form-control" placeholder="Fullname" aria-label="Fullname" aria-describedby="basic-addon1" id="full-name-input">
                     </div>
                     <span asp-validation-for="Input.User.FullName" class="text-danger"></span>
                 </div>
@@ -47,7 +47,7 @@
                         <div class="input-group-prepend">
                             <span class="input-group-text" id="basic-addon1">Phone number</span>
                         </div>
-                        <input required asp-for="Input.User.PhoneNumber" value="@Model.Input.User.PhoneNumber" type="text" class="form-control" placeholder="PhoneNumber" aria-label="PhoneNumber" aria-describedby="basic-addon1" id="phone-number-input">
+                        <input required asp-for="Input.User.PhoneNumber" value="@Model.UserData.PhoneNumber" type="text" class="form-control" placeholder="PhoneNumber" aria-label="PhoneNumber" aria-describedby="basic-addon1" id="phone-number-input">
                     </div>
                     <span asp-validation-for="Input.User.PhoneNumber" class="text-danger"></span>
                 </div>
@@ -56,14 +56,14 @@
                         <div class="input-group-prepend">
                             <span class="input-group-text" id="basic-addon1">Address</span>
                         </div>
-                        <input required asp-for="Input.User.Address" value="@Model.Input.User.Address" type="text" class="form-control" placeholder="Address" aria-label="Address" aria-describedby="basic-addon1" id="address-input">
+                        <input required asp-for="Input.User.Address" value="@Model.UserData.Address" type="text" class="form-control" placeholder="Address" aria-label="Address" aria-describedby="basic-addon1" id="address-input">
                     </div>
                     <span asp-validation-for="Input.User.Address" class="text-danger"></span>
                 </div>
             </div>
             <div class="d-flex flex-column" >
-                <p class="item-id m-0"><strong>Created at:</strong> @Model.Input.User.CreatedAt</p>
-                <p class="item-id m-0"><strong>Last modified:</strong> @Model.Input.User.ModifiedAt</p>
+                <p class="item-id m-0"><strong>Created at:</strong> @Model.UserData.CreatedAt</p>
+                <p class="item-id m-0"><strong>Last modified:</strong> @Model.UserData.ModifiedAt</p>
                 <div class="d-flex">
                     <button type="submit" disabled class="btn btn-success w-fit mt-5" id="save-button">Save</button>
                     <a href="/Admin/Users" class="btn btn-danger w-fit mt-5 mx-3">Cancel</a>

@@ -49,11 +49,6 @@ public class OrderService : BaseService<OrderEntity>, IOrderService
             cartProductsId.Add(item.Product.Id);
         }
 
-        if (createOrder.Products.Count != cartProductsId.Count)
-        {
-            throw new AppException(HttpStatusCode.BadRequest, String.Format(ErrorMessages.DOES_NOT_MATCH, "CartProduct", "OrderProduct"));
-        }
-
         var orderProducts = new List<OrderProductEntity>();
         foreach (var item in createOrder.Products)
         {
