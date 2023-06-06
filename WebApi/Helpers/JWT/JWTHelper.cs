@@ -32,7 +32,7 @@ public class JWTHelper
         {
             new Claim(JwtRegisteredClaimNames.Email, user.Email),
             new Claim("fullName", user.FullName),
-            new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
+            new Claim(JwtRegisteredClaimNames.Sub, user.Id),
         };
 
         foreach (var role in roles)

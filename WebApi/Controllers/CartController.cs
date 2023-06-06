@@ -27,4 +27,17 @@ public class CartController : BaseController
     [HttpPut]
     public async Task<IActionResult> Update(UpdateCartDTO updateCart)
     => Ok(await _cartService.Update(updateCart));
+
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(CartDTO))]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [HttpDelete("{itemId}")]
+    public async Task<IActionResult> RemoveFromCart(string itemId)
+    => Ok(await _cartService.RemoveFromCart(itemId));
+
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(CartDTO))]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [HttpPost]
+    public async Task<IActionResult> AddToCart([FromBody] AddToCartDTO addToCart)
+    => Ok(await _cartService.AddToCart(addToCart));
 }

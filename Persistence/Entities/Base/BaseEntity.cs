@@ -3,18 +3,28 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Persistence.Entities;
 
-public class BaseEntity
+public class BaseEntity : ITimestamp
 {
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public string Id { get; set; }
     public DateTime? CreatedAt { get; set; }
     public DateTime? ModifiedAt { get; set; }
-    public string CreatedBy { get; set; }
-    public string UpdatedBy { get; set; }
+
     public BaseEntity()
     {
         ModifiedAt = DateTime.UtcNow;
         CreatedAt = CreatedAt ?? ModifiedAt;
     }
+}
+
+public interface ISoftDeletable
+{
+    public DateTime? DeletedAt { get; set; }
+}
+
+public interface ITimestamp
+{
+    public DateTime? CreatedAt { get; set; }
+    public DateTime? ModifiedAt { get; set; }
 }

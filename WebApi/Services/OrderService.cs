@@ -35,7 +35,7 @@ public class OrderService : BaseService<OrderEntity>, IOrderService
                             .Include(x => x.Cart)
                             .ThenInclude(x => x.CartProducts)
                             .ThenInclude(x => x.Product)
-                            .Where(x => x.Id.ToString() == _userId)
+                            .Where(x => x.Id == _userId)
                             .FirstOrDefaultAsync();
 
         if (user == null)
@@ -74,8 +74,9 @@ public class OrderService : BaseService<OrderEntity>, IOrderService
         var order = new OrderEntity()
         {
             User = user,
-            OrderProducts = orderProducts,
+            Products = orderProducts,
         };
+        order.Status = OrderStatus.WAIT_FOR_APPROVAL;
 
         await _dbContext.SaveChangesAsync();
 
@@ -91,7 +92,7 @@ public class OrderService : BaseService<OrderEntity>, IOrderService
             throw new AppException(HttpStatusCode.NotFound, String.Format(ErrorMessages.NOT_FOUND_ERROR, "Order", "Id", id));
         }
 
-        _dbSet.Remove(order);
+        order.Status = OrderStatus.CANCELED;
         await _dbContext.SaveChangesAsync();
     }
 
@@ -103,7 +104,7 @@ public class OrderService : BaseService<OrderEntity>, IOrderService
             throw new AppException(HttpStatusCode.NotFound, String.Format(ErrorMessages.NOT_FOUND_ERROR, "Order", "Id", id));
         }
 
-        order.DeliveringStatus = true;
+        order.Status = OrderStatus.DELIVERING;
 
         await _dbContext.SaveChangesAsync();
     }

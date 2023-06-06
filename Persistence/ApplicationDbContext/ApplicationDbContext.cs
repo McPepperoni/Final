@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -5,7 +6,7 @@ using Persistence.Entities;
 
 namespace Persistence;
 
-public class ApplicationDbContext : IdentityDbContext<UserEntity, IdentityRole<Guid>, Guid>
+public class ApplicationDbContext : IdentityDbContext<UserEntity, IdentityRole<string>, string>
 {
     public DbSet<CartEntity> Carts { get; set; }
     public DbSet<CartProductEntity> CartProducts { get; set; }
@@ -27,7 +28,7 @@ public class ApplicationDbContext : IdentityDbContext<UserEntity, IdentityRole<G
         builder.Entity<UserEntity>()
         .HasOne(x => x.Cart)
         .WithOne()
-        .HasForeignKey<CartEntity>()
+        .HasForeignKey<CartEntity>(x => x.UserId)
         .OnDelete(DeleteBehavior.Cascade);
 
         // Category
@@ -39,11 +40,13 @@ public class ApplicationDbContext : IdentityDbContext<UserEntity, IdentityRole<G
         .ToTable("Products")
         .HasMany(x => x.Categories)
         .WithOne(x => x.Product)
+        .HasForeignKey(x => x.ProductId)
         .OnDelete(DeleteBehavior.Cascade);
 
         builder.Entity<ProductEntity>()
         .HasMany<CartProductEntity>()
         .WithOne(x => x.Product)
+        .HasForeignKey(x => x.ProductId)
         .OnDelete(DeleteBehavior.Cascade);
 
         // Product Category
@@ -53,8 +56,9 @@ public class ApplicationDbContext : IdentityDbContext<UserEntity, IdentityRole<G
         // Category
         builder.Entity<CategoryEntity>()
         .ToTable("Categories")
-        .HasMany<ProductCategoryEntity>()
+        .HasMany<ProductCategoryEntity>(x => x.ProductCategories)
         .WithOne(x => x.Category)
+        .HasForeignKey(x => x.CategoryId)
         .OnDelete(DeleteBehavior.Cascade);
 
         // Cart Product
@@ -67,18 +71,21 @@ public class ApplicationDbContext : IdentityDbContext<UserEntity, IdentityRole<G
         .ToTable("Carts")
         .HasMany(x => x.CartProducts)
         .WithOne(x => x.Cart)
+        .HasForeignKey(x => x.CartId)
         .OnDelete(DeleteBehavior.Cascade);
 
         // Order
         builder.Entity<OrderEntity>()
         .ToTable("Orders")
-        .HasMany(x => x.OrderProducts)
-        .WithOne()
+        .HasMany(x => x.Products)
+        .WithOne(x => x.Order)
+        .HasForeignKey(x => x.OrderId)
         .OnDelete(DeleteBehavior.Cascade);
 
         builder.Entity<OrderEntity>()
         .HasOne(x => x.User)
-        .WithMany();
+        .WithMany(x => x.Orders)
+        .HasForeignKey(x => x.UserId);
 
         // Order Product
         builder.Entity<OrderProductEntity>()
@@ -87,21 +94,51 @@ public class ApplicationDbContext : IdentityDbContext<UserEntity, IdentityRole<G
         //JWT Token
         builder.Entity<JWTTokenEntity>()
         .ToTable("WhiteListedTokens");
+
+        ConfigureSoftDeleteFilter(builder);
+    }
+
+    private static void ConfigureSoftDeleteFilter(ModelBuilder builder)
+    {
+        foreach (var softDeletableTypeBuilder in builder.Model.GetEntityTypes()
+        .Where(x => typeof(ISoftDeletable).IsAssignableFrom(x.ClrType)))
+        {
+            var parameter = Expression.Parameter(softDeletableTypeBuilder.ClrType, "p");
+
+            softDeletableTypeBuilder.SetQueryFilter(
+                Expression.Lambda(
+                    Expression.Equal(
+                        Expression.Property(parameter, nameof(ISoftDeletable.DeletedAt)),
+                        Expression.Constant(null)),
+                    parameter)
+            );
+        }
     }
 
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
         var entities = ChangeTracker.Entries()
-                                    .Where(x => x.Entity is BaseEntity && (x.State == EntityState.Modified || x.State == EntityState.Added));
+                                    .Where(x => x.Entity is ITimestamp && (x.State == EntityState.Modified || x.State == EntityState.Added));
 
         foreach (var entity in entities)
         {
             var now = DateTime.UtcNow;
-            ((BaseEntity)entity.Entity).ModifiedAt = now;
+            ((ITimestamp)entity.Entity).ModifiedAt = now;
 
             if (entity.State == EntityState.Added)
             {
-                ((BaseEntity)entity.Entity).CreatedAt = now;
+                ((ITimestamp)entity.Entity).CreatedAt = now;
+                ((ITimestamp)entity.Entity).ModifiedAt = now;
+            }
+            else if (entity.State == EntityState.Modified)
+            {
+                ((ITimestamp)entity.Entity).ModifiedAt = now;
+            }
+            else if (entity.State == EntityState.Deleted)
+            {
+                entity.State = EntityState.Unchanged;
+                ((ITimestamp)entity.Entity).ModifiedAt = now;
+                ((ISoftDeletable)entity.Entity).DeletedAt = now;
             }
         }
 
@@ -116,11 +153,22 @@ public class ApplicationDbContext : IdentityDbContext<UserEntity, IdentityRole<G
         foreach (var entity in entities)
         {
             var now = DateTime.UtcNow;
-            ((BaseEntity)entity.Entity).ModifiedAt = now;
+            ((ITimestamp)entity.Entity).ModifiedAt = now;
 
             if (entity.State == EntityState.Added)
             {
-                ((BaseEntity)entity.Entity).CreatedAt = now;
+                ((ITimestamp)entity.Entity).CreatedAt = now;
+                ((ITimestamp)entity.Entity).ModifiedAt = now;
+            }
+            else if (entity.State == EntityState.Modified)
+            {
+                ((ITimestamp)entity.Entity).ModifiedAt = now;
+            }
+            else if (entity.State == EntityState.Deleted)
+            {
+                entity.State = EntityState.Unchanged;
+                ((ITimestamp)entity.Entity).ModifiedAt = now;
+                ((ITimestamp)entity.Entity).CreatedAt = now;
             }
         }
 

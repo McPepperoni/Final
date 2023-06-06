@@ -9,7 +9,7 @@ public static class IdentityServices
 {
     public static IServiceCollection AddIdentities(this IServiceCollection services)
     {
-        services.AddIdentity<UserEntity, IdentityRole<Guid>>()
+        services.AddIdentity<UserEntity, IdentityRole<string>>()
         .AddEntityFrameworkStores<ApplicationDbContext>()
         .AddUserManager<FinalUserManager>()
         .AddSignInManager<FinalSignInManager>(); ;

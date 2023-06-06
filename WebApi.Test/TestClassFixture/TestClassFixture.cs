@@ -25,7 +25,7 @@ public class TestClassFixture : IClassFixture<TestWebApplicationFactory<Program>
 
     public class UserSeedDTO
     {
-        public Guid Id { get; set; }
+        public string Id { get; set; }
         public string Email { get; set; }
         public string Password { get; set; }
         public string FullName { get; set; }
@@ -55,12 +55,12 @@ public class TestClassFixture : IClassFixture<TestWebApplicationFactory<Program>
         var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
         dbContext.Database.Migrate();
 
-        var RoleAdmin = new IdentityRole<Guid>();
-        var RoleUser = new IdentityRole<Guid>();
+        var RoleAdmin = new IdentityRole<string>();
+        var RoleUser = new IdentityRole<string>();
         if (!dbContext.Roles.Any())
         {
-            var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole<Guid>>>();
-            var roles = GetJson<IdentityRole<Guid>>(@"Db/RoleData.json");
+            var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole<string>>>();
+            var roles = GetJson<IdentityRole<string>>(@"Db/RoleData.json");
 
             foreach (var role in roles)
             {
@@ -100,7 +100,7 @@ public class TestClassFixture : IClassFixture<TestWebApplicationFactory<Program>
                 dbContext.Users.Add(mappedUser);
 
                 var role = dbContext.Roles.FirstOrDefault(x => x.Name == user.Role);
-                var userRole = new IdentityUserRole<Guid>()
+                var userRole = new IdentityUserRole<string>()
                 {
                     UserId = mappedUser.Id,
                     RoleId = user.Role == "Admin" ? RoleAdmin.Id : RoleUser.Id,
@@ -175,7 +175,7 @@ public class TestClassFixture : IClassFixture<TestWebApplicationFactory<Program>
         {
             new Claim(JwtRegisteredClaimNames.Email, user.Email),
             new Claim("fullName", user.FullName),
-            new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
+            new Claim(JwtRegisteredClaimNames.Sub, user.Id),
         };
 
         foreach (var role in roles)

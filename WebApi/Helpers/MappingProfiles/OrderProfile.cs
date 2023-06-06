@@ -9,6 +9,6 @@ public class OrderProfile : Profile
     public OrderProfile()
     {
         CreateMap<OrderEntity, OrderDTO>()
-        .IncludeMembers(x => x.OrderProducts);
+        .IncludeMembers(x => x.Products);
     }
 }

@@ -35,7 +35,7 @@ public class UserService : BaseService<UserEntity>, IUserService
 
     public async Task<UserDTO> Get(string id)
     {
-        var user = await _dbSet.FindAsync(new Guid(id));
+        var user = await _dbSet.FindAsync(id);
 
         if (user == null)
         {
@@ -69,7 +69,7 @@ public class UserService : BaseService<UserEntity>, IUserService
     }
     public async Task Update(string id, UpdateUserDTO updateUser)
     {
-        var user = await _dbSet.FindAsync(new Guid(id));
+        var user = await _dbSet.FindAsync(id);
         if (user == null)
         {
             throw new AppException(HttpStatusCode.NotFound, String.Format(ErrorMessages.NOT_FOUND_ERROR, "User", "id", id));
@@ -84,7 +84,7 @@ public class UserService : BaseService<UserEntity>, IUserService
     }
     public async Task Delete(string id)
     {
-        var user = await _dbSet.FindAsync(new Guid(id));
+        var user = await _dbSet.FindAsync(id);
         if (user == null)
         {
             throw new AppException(HttpStatusCode.NotFound, String.Format(ErrorMessages.NOT_FOUND_ERROR, "User", "Id", id));

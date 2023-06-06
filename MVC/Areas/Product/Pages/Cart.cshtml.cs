@@ -61,7 +61,7 @@ public class CartModel : BaseAuthorizedPageModel
 
     public async Task<IActionResult> OnGetRemoveFromCart(string itemId)
     {
-        var response = await _client.DeleteAsync($"CartItem/{itemId}");
+        var response = await _client.DeleteAsync($"Cart/{itemId}");
 
         return RedirectToPage();
     }

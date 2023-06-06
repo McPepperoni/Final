@@ -35,7 +35,7 @@ public class FinalUserManager : UserManager<UserEntity>
             return IdentityResult.Failed(new IdentityError { Code = "404", Description = "No role found" });
         }
 
-        await _dbContext.UserRoles.AddAsync(new IdentityUserRole<Guid>
+        await _dbContext.UserRoles.AddAsync(new IdentityUserRole<string>
         {
             UserId = user.Id,
             RoleId = role.Id,

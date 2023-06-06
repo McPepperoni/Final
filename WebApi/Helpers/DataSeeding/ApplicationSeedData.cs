@@ -11,7 +11,7 @@ public class ApplicationSeedData
 {
     public class UserSeedDTO
     {
-        public Guid Id { get; set; }
+        public string Id { get; set; }
         public string Email { get; set; }
         public string Password { get; set; }
         public string FullName { get; set; }
@@ -27,12 +27,17 @@ public class ApplicationSeedData
 
         if (!dbContext.Roles.Any())
         {
-            var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole<Guid>>>();
-            var roles = GetJson<IdentityRole<Guid>>(@"Db/RoleData.json");
+            var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole<string>>>();
+            var roles = GetJson<IdentityRole<string>>(@"Db/RoleData.json");
 
             foreach (var role in roles)
             {
-                await roleManager.CreateAsync(new IdentityRole<Guid>(role.Name));
+                await roleManager.CreateAsync(new IdentityRole<string>()
+                {
+                    Name = role.Name,
+                    NormalizedName = role.Name.ToUpper(),
+                    Id = Guid.NewGuid().ToString()
+                });
             }
         }
 

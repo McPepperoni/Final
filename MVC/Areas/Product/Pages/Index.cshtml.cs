@@ -145,7 +145,7 @@ public class IndexModel : BaseAuthorizedPageModel
             Quantity = Input.ProductsQuantity,
         };
 
-        var response = await _client.PostAsJsonAsync($"CartItem", requestBody);
+        var response = await _client.PostAsJsonAsync($"Cart", requestBody);
 
         return RedirectToPage();
     }

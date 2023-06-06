@@ -87,7 +87,9 @@ namespace MVC.Areas.Identity.Pages.Account
                     var token = handler.ReadJwtToken(content.AccessToken);
 
                     var claims = ((JwtSecurityToken)token).Claims.ToList();
-                    claims.Add(new Claim("JWT", content.AccessToken));
+
+                    claims.Add(new Claim("AccessToken", content.AccessToken));
+                    claims.Add(new Claim("RefreshToken", content.RefreshToken));
 
                     var claimsIdentity = new ClaimsIdentity(
                         claims, CookieAuthenticationDefaults.AuthenticationScheme);

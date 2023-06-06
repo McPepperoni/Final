@@ -17,21 +17,13 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddHttpClients();
 
 builder.Services.AddDefaultIdentity<UserEntity>()
-.AddRoles<IdentityRole<Guid>>()
+.AddRoles<IdentityRole<string>>()
 .AddEntityFrameworkStores<ApplicationDbContext>()
 .AddUserManager<FinalUserManager>()
 .AddSignInManager<FinalSignInManager>();
 
 builder.Services.AddRazorPages();
-builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-    .AddCookie(options =>
-    {
-        options.ExpireTimeSpan = TimeSpan.FromMinutes(20);
-        options.SlidingExpiration = true;
-        options.AccessDeniedPath = "/Forbidden";
-        options.LoginPath = "/Identity/Account/Login";
-        options.LogoutPath = "/Identity/Account/Logout";
-    });
+builder.Services.AddAppAuthentication();
 
 var app = builder.Build();
 
