@@ -22,7 +22,7 @@ builder.Services.AddDefaultIdentity<UserEntity>()
 .AddUserManager<FinalUserManager>()
 .AddSignInManager<FinalSignInManager>();
 
-builder.Services.AddRazorPages();
+builder.Services.AddPages();
 builder.Services.AddAppAuthentication();
 
 var app = builder.Build();

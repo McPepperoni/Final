@@ -2,12 +2,9 @@ using System.Net.Http.Headers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-using MVC.Helpers.Filters;
-
 namespace MVC.Areas;
 
 [Authorize]
-[UnauthorizeExceptionFilter]
 public class BaseAuthorizedPageModel : PageModel
 {
     protected readonly HttpClient _client;

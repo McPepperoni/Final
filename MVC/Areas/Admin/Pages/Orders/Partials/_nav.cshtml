@@ -1,0 +1,28 @@
+@using Persistence.Entities
+@model string
+
+<nav class="p-absolute top-0 left-0 d-grid sub-nav-bar w-100 list-group shadow-sm fw-bold">
+  <a
+    class="d-flex justify-content-center align-items-center list-group-item bg-secondary text-light border rounded-0 @(Model == OrderStatus.WAIT_FOR_APPROVAL ? "active" : "")"
+    href="/Admin/Orders?OrderStatus=@OrderStatus.WAIT_FOR_APPROVAL"
+  >
+    Waiting for approval
+  </a>
+  <a
+    class="d-flex justify-content-center align-items-center list-group-item border rounded-0 @(Model == OrderStatus.DELIVERING ? "active" : "")"
+    href="/Admin/Orders?OrderStatus=@OrderStatus.DELIVERING"
+    >Delivering</a
+  >
+  <a
+    class="d-flex justify-content-center align-items-center list-group-item border rounded-0 @(Model == OrderStatus.DELIVERED ? "active" : "")"
+    href="/Admin/Orders?OrderStatus=@OrderStatus.DELIVERED"
+    >Delivered</a
+  >
+  <a
+    class="d-flex justify-content-center align-items-center list-group-item border rounded-0 @(Model == OrderStatus.CANCELED ? "canceled-active" : "canceled")"
+    href="/Admin/Orders?OrderStatus=@OrderStatus.CANCELED"
+    >Canceled</a
+  >
+</nav>
+
+

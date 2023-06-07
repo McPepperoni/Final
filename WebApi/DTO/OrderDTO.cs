@@ -4,7 +4,7 @@ namespace WebApi.DTOs;
 public class OrderDTO : BaseDTO
 {
     public UserDTO User { get; set; }
-    public bool DeliveringStatus { get; set; }
+    public string Status { get; set; }
     public List<OrderProductDTO> Products { get; set; }
 }
 

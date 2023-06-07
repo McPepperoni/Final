@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.IdentityModel.Tokens.Jwt;
+using System.Net;
 using System.Net.Http.Headers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -14,6 +15,7 @@ public class CartModel : BaseAuthorizedPageModel
 
     [BindProperty]
     public InputModel Input { get; set; }
+    public string Error { get; set; }
 
     public class InputModel
     {
@@ -66,8 +68,9 @@ public class CartModel : BaseAuthorizedPageModel
         return RedirectToPage();
     }
 
-    public async Task<IActionResult> OnPostPlaceOrder(string itemIds)
+    public async Task<IActionResult> OnPostPlaceOrder(string itemIds, string err = null)
     {
+        Error = err;
         var ids = itemIds.Split(',');
         var requestBody = new CreateOrderDTO()
         {
@@ -87,6 +90,11 @@ public class CartModel : BaseAuthorizedPageModel
         }
 
         var response = await _client.PostAsJsonAsync("Order", requestBody);
+        if (response.StatusCode == HttpStatusCode.NotFound)
+        {
+            var content = await response.Content.ReadFromJsonAsync<ErrorDTO>();
+            Redirect($"/Product/Cart?={content.Message}");
+        }
 
         return RedirectToPage();
     }

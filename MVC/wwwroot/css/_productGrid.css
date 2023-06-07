@@ -33,3 +33,9 @@
 .category-container {
   font-size: small;
 }
+
+.product-item:hover {
+  translate: 0 -1%;
+  scale: 103%;
+  transition: 150ms ease-in-out;
+}

@@ -1,0 +1,29 @@
+.sub-nav-bar {
+  grid-template-columns: repeat(4, 1fr);
+  top: -3rem !important;
+}
+
+.sub-nav-bar .canceled-active {
+  background-color: rgba(var(--bs-danger-rgb), var(--bs-bg-opacity)) !important;
+  --bs-text-opacity: 1;
+  color: rgba(var(--bs-light-rgb), var(--bs-text-opacity)) !important;
+}
+
+.sub-nav-bar .canceled {
+  color: #842029;
+  background-color: #f8d7da;
+}
+
+.sub-nav-bar .active,
+.sub-nav-bar .canceled-active {
+  border-width: 5px !important;
+}
+
+.categories-active {
+  border-width: 5px;
+}
+
+.order-item-container {
+  height: 300px;
+  overflow-y: scroll;
+}

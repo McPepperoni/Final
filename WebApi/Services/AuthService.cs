@@ -44,8 +44,8 @@ public class AuthService : BaseService<UserEntity>, IAuthService
             throw new AppException(HttpStatusCode.BadRequest, String.Format(ErrorMessages.BAD_REQUEST_FAILED, "Login"));
         }
 
-        var accessToken = await _jwtHelper.Create(await _userManager.FindByEmailAsync(authLogin.Email), DateTime.UtcNow.AddMinutes(0.5));
-        var refreshToken = await _jwtHelper.Create(await _userManager.FindByEmailAsync(authLogin.Email), DateTime.UtcNow.AddDays(2));
+        var accessToken = await _jwtHelper.Create(await _userManager.FindByEmailAsync(authLogin.Email), DateTime.UtcNow.AddHours(1));
+        var refreshToken = await _jwtHelper.Create(await _userManager.FindByEmailAsync(authLogin.Email), DateTime.UtcNow.AddDays(7));
         await _whiteListedToken.AddAsync(refreshToken);
 
         await _dbContext.SaveChangesAsync();
@@ -87,8 +87,8 @@ public class AuthService : BaseService<UserEntity>, IAuthService
             throw new AppException(HttpStatusCode.BadRequest, String.Format(ErrorMessages.BAD_REQUEST_INVALID, "Token"));
         }
 
-        var refreshToken = await _jwtHelper.Create(user, DateTime.UtcNow.AddMinutes(0.5));
-        var accessToken = await _jwtHelper.Create(user, DateTime.UtcNow.AddHours(1));
+        var refreshToken = await _jwtHelper.Create(user, DateTime.UtcNow.AddHours(1));
+        var accessToken = await _jwtHelper.Create(user, DateTime.UtcNow.AddDays(7));
 
         await _whiteListedToken.AddAsync(refreshToken);
         _whiteListedToken.Remove(token);

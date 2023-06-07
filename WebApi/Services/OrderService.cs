@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Data;
 using System.Net;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
@@ -11,40 +13,41 @@ namespace WebApi.Services;
 
 public interface IOrderService
 {
-    Task<OrderDTO> Create(CreateOrderDTO createOrder);
-    Task ProceedOrder(string id);
-    Task CancelOrder(string id);
+    Task<OrderDTO> CreateAsync(CreateOrderDTO createOrder);
+    Task UpdateOrder(string id, string orderStatus);
+    Task CancelOrderAsync(string id);
+    Task<List<OrderDTO>> Filter(string orderState);
+    Task<OrderDTO> Get(string id);
 }
 
 public class OrderService : BaseService<OrderEntity>, IOrderService
 {
-    private readonly DbSet<UserEntity> _users;
     private readonly DbSet<CartProductEntity> _cartProducts;
     private readonly DbSet<OrderProductEntity> _orderProducts;
+    private readonly DbSet<CartEntity> _cartDbSet;
 
     public OrderService(ApplicationDbContext dbContext, IMapper mapper, IHttpContextAccessor httpContextAccessor) : base(httpContextAccessor, dbContext, mapper)
     {
         _cartProducts = dbContext.CartProducts;
         _orderProducts = dbContext.OrderProducts;
-        _users = dbContext.Users;
+        _cartDbSet = dbContext.Carts;
     }
 
-    public async Task<OrderDTO> Create(CreateOrderDTO createOrder)
+    public async Task<OrderDTO> CreateAsync(CreateOrderDTO createOrder)
     {
-        var user = await _users
-                            .Include(x => x.Cart)
-                            .ThenInclude(x => x.CartProducts)
+        var cart = await _cartDbSet
+                            .Where(x => x.UserId == _userId)
+                            .Include(x => x.CartProducts)
                             .ThenInclude(x => x.Product)
-                            .Where(x => x.Id == _userId)
                             .FirstOrDefaultAsync();
 
-        if (user == null)
+        if (cart == null)
         {
             throw new AppException(HttpStatusCode.NotFound, String.Format(ErrorMessages.NOT_FOUND_ERROR, "User", "id", _userId));
         }
 
         var cartProductsId = new List<string>();
-        foreach (var item in user.Cart.CartProducts)
+        foreach (var item in cart.CartProducts)
         {
             cartProductsId.Add(item.Product.Id);
         }
@@ -57,7 +60,7 @@ public class OrderService : BaseService<OrderEntity>, IOrderService
                 throw new AppException(HttpStatusCode.BadRequest, String.Format(ErrorMessages.DOES_NOT_MATCH, "CartProduct", "OrderProduct"));
             }
 
-            var cartProduct = user.Cart.CartProducts
+            var cartProduct = cart.CartProducts
                             .Where(x => x.Product.Id == item.ProductId)
                             .FirstOrDefault();
 
@@ -73,17 +76,19 @@ public class OrderService : BaseService<OrderEntity>, IOrderService
 
         var order = new OrderEntity()
         {
-            User = user,
+            UserId = cart.UserId,
             Products = orderProducts,
         };
         order.Status = OrderStatus.WAIT_FOR_APPROVAL;
+
+        await _dbSet.AddAsync(order);
 
         await _dbContext.SaveChangesAsync();
 
         return _mapper.Map<OrderDTO>(order);
     }
 
-    public async Task CancelOrder(string id)
+    public async Task CancelOrderAsync(string id)
     {
         var order = await _dbSet.FindAsync(id);
 
@@ -96,16 +101,54 @@ public class OrderService : BaseService<OrderEntity>, IOrderService
         await _dbContext.SaveChangesAsync();
     }
 
-    public async Task ProceedOrder(string id)
+    public async Task UpdateOrder(string id, string orderState)
     {
+        if ((orderState != OrderStatus.CANCELED && orderState != OrderStatus.DELIVERED && orderState != OrderStatus.DELIVERING && orderState != OrderStatus.WAIT_FOR_APPROVAL) || orderState == OrderStatus.CANCELED)
+        {
+            throw new AppException(HttpStatusCode.BadRequest, String.Format(ErrorMessages.BAD_REQUEST_INVALID, "Order State"));
+        }
+
         var order = await _dbSet.FindAsync(id);
         if (order == null)
         {
             throw new AppException(HttpStatusCode.NotFound, String.Format(ErrorMessages.NOT_FOUND_ERROR, "Order", "Id", id));
         }
 
-        order.Status = OrderStatus.DELIVERING;
+        order.Status = orderState;
 
         await _dbContext.SaveChangesAsync();
+    }
+
+    public async Task<List<OrderDTO>> Filter(string orderState = OrderStatus.WAIT_FOR_APPROVAL)
+    {
+        if (orderState != OrderStatus.CANCELED && orderState != OrderStatus.DELIVERED && orderState != OrderStatus.DELIVERING && orderState != OrderStatus.WAIT_FOR_APPROVAL)
+        {
+            throw new AppException(HttpStatusCode.BadRequest, String.Format(ErrorMessages.BAD_REQUEST_INVALID, "Order State"));
+        }
+
+        var orders = await _dbSet
+                            .Where(x => x.Status == orderState)
+                            .Include(x => x.User)
+                            .Include(x => x.Products)
+                            .ThenInclude(x => x.Product)
+                            .ToListAsync();
+
+        return _mapper.Map<List<OrderDTO>>(orders);
+    }
+
+    public async Task<OrderDTO> Get(string id)
+    {
+        var order = await _dbSet
+                            .Include(x => x.User)
+                            .Include(x => x.Products)
+                            .ThenInclude(x => x.Product)
+                            .FirstOrDefaultAsync();
+
+        if (order == null)
+        {
+            throw new AppException(HttpStatusCode.NotFound, String.Format(ErrorMessages.NOT_FOUND_ERROR, "Order", "Id", id));
+        }
+
+        return _mapper.Map<OrderDTO>(order);
     }
 }

@@ -1,0 +1,46 @@
+@using Persistence.Entities
+@using MVC.Areas.Admin.Pages.Orders
+@model IndexModel
+
+<div class="w-100 items-container d-flex flex-column align-items-center mt-5">
+  <ul class="list-group w-100 px-5">
+    @foreach (var (item, i) in Model.Orders.Select((x, i) => (x, i)))
+    {
+    <li class="list-group-item d-flex justify-content-between align-items-center">
+      <div class="item-info d-flex align-items-center">
+        <h4 class="mr-2">@(i + 1)</h4>
+        <div class="img-container rounded border p-1 item-img">
+            <img
+            src="https://source.unsplash.com/random/800x800/?img=2"
+            alt="profile-img" class="">
+        </div>
+        <div class="d-flex flex-column mx-3 justify-content-center">
+            <p class="item-id m-0 opacity-50 text-sm">@item.Id</p>
+            <a class="list-group-item border-0 px-0" href="/Admin/Orders/View?id=@item.Id">
+              <h2>@item.User.FullName (@item.Products.Count)</h2>
+            </a>
+            <p class="item-id m-0 opacity-50 text-sm">
+              <strong>Last modified:</strong> @item.ModifiedAt.ToLongTimeString()
+            </p>
+        </div>
+      </div>
+      <div class="actions-container h-100 d-flex align-items-center">
+        @if(Model.Status != OrderStatus.DELIVERED)
+        {
+            <a asp-page-handler="UpdateOrder" asp-route-id="@item.Id" asp-route-currentState="@item.Status" class="btn btn-success mx-3">
+                <i class="fa-solid fa-truck-fast"></i>
+            </a>
+            @if(Model.Status != OrderStatus.CANCELED)            
+            {
+                <a class="btn btn-danger" asp-route-id="@item.Id" asp-page-handler="CancelOrder">
+                    <i class="fa-solid fa-circle-minus"></i>
+                </a>
+            }
+        }
+      </div>
+    </li>
+    }
+  </ul>
+</div>
+
+

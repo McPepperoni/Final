@@ -1,0 +1,15 @@
+@page
+@using MVC.Areas.Admin.Pages.Orders
+@model IndexModel
+
+@{
+    ViewData["Title"] = "Admin - Orders";
+}
+
+<div class="d-flex">
+    @await Html.PartialAsync("../Partials/_categories.cshtml")
+    <div class="w-100 h-100 d-flex justify-content-center align-items-center my-5 p-relative">
+        @await Html.PartialAsync("Partials/_nav.cshtml", Model.Status)
+        @await Html.PartialAsync("Partials/_list.cshtml", Model)
+    </div>
+</div>

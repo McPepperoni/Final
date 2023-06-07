@@ -1,0 +1,47 @@
+@page
+
+@using MVC.Areas.Admin.Pages.Orders
+@model ViewModel
+
+@{
+    ViewData["Title"] = "Users add";
+}
+
+<div class="d-flex justify-content-center align-items-center flex-column w-100 mt-5">
+
+  <div class="d-flex w-100 edit-container mt-5 border rounded p-5">
+    <div class="d-flex flex-column w-50">
+        <div class="w-100 rounded p-1 item-img p-5">
+            <img
+            src="~/assets/cover.jpg"
+            alt="profile-img" class="rounded shadow">
+        </div>
+    </div>
+    <div class="flex flex-column w-50" method="post" id="user-add-form">
+        <div class="d-flex flex-column mx-3 justify-content-center h-100">
+            <h3 class="mb-4">@Model.Order.User.FullName</h3>
+            <ul class="list-group order-item-container border shadow rounded mb-3">
+                @foreach (var (item, i) in Model.Order.Products.Select((item, i) => (item, i)))
+                { 
+                    <li class="list-group-item list-group-item-action d-flex justify-content-between align-items-center cart-item">
+                        <div class="d-flex justify-content-between w-100 align-items-center">
+                            <div class="">@item.Product.Name</div>
+                            <div class="">@item.Product.Quantity</div>
+                            <div class=""><strong>@item.Product.Price.ToString("N0")</strong> đ</div>
+                        </div>
+                    </li>
+                }
+            </ul>
+            <div class="d-flex flex-column" >
+                <div class="d-flex">
+                    <a href="/Admin/Orders" class="btn btn-secondary w-fit mt-5">Back</a>
+                </div>
+            </div>
+        </div>
+    </div>
+  </div>
+</div>
+
+@section Scripts {
+                                <partial name="_ValidationScriptsPartial" />
+}

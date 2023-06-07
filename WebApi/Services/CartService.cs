@@ -31,35 +31,32 @@ public class CartService : BaseService<CartEntity>, ICartService
 
     public async Task<CartDTO> Get()
     {
-        var user = await _userDbSet
-        .Where(x => x.Id == _userId)
-        .Include(x => x.Cart)
-        .ThenInclude(x => x.CartProducts)
-        .ThenInclude(x => x.Product)
-        .FirstOrDefaultAsync();
+        var cart = await _dbSet
+                        .Where(x => x.UserId == _userId)
+                        .Include(x => x.CartProducts)
+                        .ThenInclude(x => x.Product)
+                        .FirstOrDefaultAsync();
 
-        if (user.Cart == null)
+        if (cart == null)
         {
             throw new AppException(HttpStatusCode.NotFound, String.Format(ErrorMessages.NOT_FOUND_ERROR, "Cart", "UserId", _userId));
         }
 
-        if (user.Cart.CartProducts == null)
+        if (cart.CartProducts == null)
         {
-            user.Cart.CartProducts = new() { };
+            cart.CartProducts = new() { };
         }
-        return _mapper.Map<CartDTO>(user.Cart);
+        return _mapper.Map<CartDTO>(cart);
     }
 
     public async Task<CartDTO> Update(UpdateCartDTO updateCart)
     {
-        var user = await _userDbSet
-        .Where(x => x.Id == _userId)
-        .Include(x => x.Cart)
-        .ThenInclude(x => x.CartProducts)
-        .ThenInclude(x => x.Product)
-        .FirstOrDefaultAsync();
+        var cart = await _dbSet
+                        .Where(x => x.UserId == _userId)
+                        .Include(x => x.CartProducts)
+                        .ThenInclude(x => x.Product)
+                        .FirstOrDefaultAsync();
 
-        var cart = user.Cart;
         if (cart == null)
         {
             throw new AppException(HttpStatusCode.NotFound, String.Format(ErrorMessages.NOT_FOUND_ERROR, "Cart", "UserId", _userId));

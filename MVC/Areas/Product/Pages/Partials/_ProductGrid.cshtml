@@ -10,7 +10,7 @@
     @foreach (var (item, i) in Model.Data.Data.Select((x, i) => (x, i)))
     {
         <div class="col-sm h-100 w-100">
-            <form method="post" class="card shadow-sm w-100 h-100" asp-route-id="@item.Id" asp-area="Product" asp-page-handler="AddToCart" asp-route-index="@i">
+            <form method="post" class="card shadow-sm w-100 h-100 product-item" asp-route-id="@item.Id" asp-area="Product" asp-page-handler="AddToCart" asp-route-index="@i">
                 <img class="card-img-top" src="@item.ImgSrc" alt="Card image cap">
                 <div class="card-body w-100 align-items-start d-flex flex-column product-card justify-content-between">
                     <h5 class="card-title w-100">@item.Name</h5>
