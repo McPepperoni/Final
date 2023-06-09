@@ -16,7 +16,7 @@ public interface IJWTService
     Task<string> Delete(JWTTokenEntity token);
 }
 
-public class JWTService : BaseService<JWTTokenEntity>, IJWTService
+public class JWTService : BaseService, IJWTService
 {
     private readonly JWTHelper _jwtHelper;
     public JWTService(ApplicationDbContext dbContext, JWTHelper jwtHelper, IMapper mapper, IHttpContextAccessor httpContextAccessor) : base(httpContextAccessor, dbContext, mapper)
@@ -26,13 +26,13 @@ public class JWTService : BaseService<JWTTokenEntity>, IJWTService
 
     public async Task<List<JWTTokenEntity>> GetExpired()
     {
-        return await _dbSet.Where(x => x.Expires < DateTime.UtcNow).ToListAsync();
+        return await _dbContext.WhiteListedToken.Where(x => x.Expires < DateTime.UtcNow).ToListAsync();
     }
 
     public async Task Add(string refreshToken)
     {
         var analyzedToken = await _jwtHelper.AnalyzeToken(refreshToken);
-        var token = await _dbSet.AddAsync(new()
+        var token = await _dbContext.WhiteListedToken.AddAsync(new()
         {
             Token = refreshToken,
             Expires = analyzedToken.ValidTo,

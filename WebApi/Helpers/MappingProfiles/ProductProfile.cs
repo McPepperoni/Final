@@ -1,6 +1,8 @@
 using AutoMapper;
 using Persistence.Entities;
-using WebApi.DTOs;
+using WebApi.DTOs.OrderProductDTO;
+using WebApi.DTOs.ProductCategoryDTO;
+using WebApi.DTOs.ProductDTO;
 
 namespace WebApi.Helpers.MappingProfiles;
 
@@ -8,11 +10,11 @@ public class ProductProfile : Profile
 {
     public ProductProfile()
     {
-        CreateMap<ProductEntity, ProductDTO>()
+        CreateMap<ProductEntity, ProductDetailDTO>()
         .IncludeMembers(x => x.Categories);
 
-        CreateMap<ProductEntity, ProductCategoryDTO>();
+        CreateMap<ProductEntity, ProductCategoryDetailDTO>();
         CreateMap<ProductCreateDTO, ProductEntity>();
-        CreateMap<ProductEntity, OrderProductDTO>();
+        CreateMap<ProductEntity, OrderProductDetailDTO>();
     }
 }

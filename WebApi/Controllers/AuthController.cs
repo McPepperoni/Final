@@ -1,8 +1,6 @@
-using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Persistence.Entities;
-using WebApi.DTOs;
+using WebApi.DTOs.AuthDTO;
 using WebApi.Helpers.JWT;
 using WebApi.Services;
 
@@ -23,26 +21,26 @@ public class AuthController : BaseController
     }
 
     [AllowAnonymous]
-    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(JWTTokenDTO))]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ResultAuthDTO))]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [HttpPost("Login")]
-    public async Task<IActionResult> Login(AuthLoginDTO authLogin)
+    public async Task<IActionResult> Login(LoginAuthDTO authLogin)
         => Ok(await _authService.Login(authLogin));
 
     [AllowAnonymous]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [HttpPost("Logout")]
-    public async Task<IActionResult> Logout(AuthRefreshTokenDTO token)
+    public async Task<IActionResult> Logout(RefreshTokenAuth token)
     {
         await _authService.Logout(token);
         return NoContent();
     }
 
     [AllowAnonymous]
-    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(JWTTokenDTO))]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ResultAuthDTO))]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [HttpPost("RefreshToken")]
-    public async Task<IActionResult> RefreshToken([FromBody] AuthRefreshTokenDTO token)
+    public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenAuth token)
         => Ok(await _authService.RefreshToken(token));
 }

@@ -4,30 +4,28 @@ using Microsoft.EntityFrameworkCore;
 using Persistence;
 using Persistence.Entities;
 using WebApi.Constants;
-using WebApi.DTOs;
+using WebApi.DTOs.ProductDTO;
 using WebApi.Middleware.ExceptionHandler;
 using WebApi.Services;
 
 public interface IProductService
 {
-    Task<ProductPaginationResponseDTO> Get(ProductPaginationRequestDTO paginationRequest);
-    Task<ProductDTO> Get(string id);
-    Task<ProductDTO> Create(ProductCreateDTO productCreate);
-    Task<ProductDTO> Update(string id, ProductUpdateDTO productUpdate);
-    Task<ProductDTO> Delete(string id);
+    Task<ProductPaginationResponseDTO> SearchAsync(ProductPaginationRequestDTO paginationRequest);
+    Task<ProductDetailDTO> GetProductDetailAsync(string id);
+    Task<ProductDetailDTO> CreateAsync(ProductCreateDTO productCreate);
+    Task<ProductDetailDTO> UpdateProductAsync(string id, ProductUpdateDTO productUpdate);
+    Task<ProductDetailDTO> DeleteProductAsync(string id);
 }
 
-public class ProductService : BaseService<ProductEntity>, IProductService
+public class ProductService : BaseService, IProductService
 {
-    private readonly DbSet<CategoryEntity> _categoryDbSet;
     public ProductService(ApplicationDbContext dbContext, IMapper mapper, IHttpContextAccessor httpContextAccessor) : base(httpContextAccessor, dbContext, mapper)
     {
-        _categoryDbSet = dbContext.Categories;
     }
 
-    public async Task<ProductPaginationResponseDTO> Get(ProductPaginationRequestDTO paginationRequest)
+    public async Task<ProductPaginationResponseDTO> SearchAsync(ProductPaginationRequestDTO paginationRequest)
     {
-        var products = _dbSet
+        var products = _dbContext.Products
                         .Where(x => x.Price > paginationRequest.PriceMin && x.Price < paginationRequest.PriceMax);
 
         if (!string.IsNullOrEmpty(paginationRequest.SearchTerm))
@@ -53,25 +51,25 @@ public class ProductService : BaseService<ProductEntity>, IProductService
 
         products.OrderByDescending(x => x.ModifiedAt);
 
-        var res = _mapper.Map<List<ProductDTO>>(await products.ToListAsync());
+        var res = _mapper.Map<List<ProductDetailDTO>>(await products.ToListAsync());
         return new ProductPaginationResponseDTO(paginationRequest, res);
     }
 
-    public async Task<ProductDTO> Create(ProductCreateDTO productCreate)
+    public async Task<ProductDetailDTO> CreateAsync(ProductCreateDTO productCreate)
     {
-        var product = await _dbSet
+        var product = await _dbContext.Products
                             .Where(x => productCreate.Name == x.Name)
                             .FirstOrDefaultAsync();
 
         if (product != null)
         {
-            throw new AppException(HttpStatusCode.Conflict, String.Format(ErrorMessages.CONFLICTED_ERROR, "Product", "Name", productCreate.Name));
+            throw new AppException(HttpStatusCode.Conflict, string.Format(ErrorMessages.CONFLICTED_ERROR, "Product", "Name", productCreate.Name));
         }
 
-        var categories = _categoryDbSet.Where(x => productCreate.CategoryIds.Contains(x.Id));
+        var categories = _dbContext.Categories.Where(x => productCreate.CategoryIds.Contains(x.Id));
         if (categories.Count() != productCreate.CategoryIds.Count)
         {
-            throw new AppException(HttpStatusCode.NotFound, String.Format(ErrorMessages.NOT_FOUND_ERROR, "Category", "Id", nameof(productCreate.CategoryIds)));
+            throw new AppException(HttpStatusCode.NotFound, string.Format(ErrorMessages.NOT_FOUND_ERROR, "Category", "Id", nameof(productCreate.CategoryIds)));
         }
 
         var productCategories = new List<ProductCategoryEntity>();
@@ -87,15 +85,15 @@ public class ProductService : BaseService<ProductEntity>, IProductService
 
         product.Categories = productCategories;
 
-        await _dbSet.AddAsync(product);
+        await _dbContext.Products.AddAsync(product);
         await _dbContext.SaveChangesAsync();
 
-        return _mapper.Map<ProductDTO>(product);
+        return _mapper.Map<ProductDetailDTO>(product);
     }
 
-    public async Task<ProductDTO> Get(string id)
+    public async Task<ProductDetailDTO> GetProductDetailAsync(string id)
     {
-        var product = await _dbSet
+        var product = await _dbContext.Products
                             .Include(x => x.Categories)
                             .ThenInclude(x => x.Category)
                             .Where(x => x.Id == id)
@@ -103,36 +101,36 @@ public class ProductService : BaseService<ProductEntity>, IProductService
 
         if (product == null)
         {
-            throw new AppException(HttpStatusCode.NotFound, String.Format(ErrorMessages.NOT_FOUND_ERROR, "Product", "Id", id));
+            throw new AppException(HttpStatusCode.NotFound, string.Format(ErrorMessages.NOT_FOUND_ERROR, "Product", "Id", id));
         }
 
-        return _mapper.Map<ProductDTO>(product);
+        return _mapper.Map<ProductDetailDTO>(product);
     }
 
-    public async Task<ProductDTO> Update(string Id, ProductUpdateDTO productUpdate)
+    public async Task<ProductDetailDTO> UpdateProductAsync(string Id, ProductUpdateDTO productUpdate)
     {
-        var product = await _dbSet
+        var product = await _dbContext.Products
                             .Where(x => Id == x.Id)
                             .FirstOrDefaultAsync();
 
         if (product == null)
         {
-            throw new AppException(HttpStatusCode.NotFound, String.Format(ErrorMessages.NOT_FOUND_ERROR, "Product", "Id", Id));
+            throw new AppException(HttpStatusCode.NotFound, string.Format(ErrorMessages.NOT_FOUND_ERROR, "Product", "Id", Id));
         }
 
-        var namedProduct = await _dbSet
+        var namedProduct = await _dbContext.Products
                             .Where(x => productUpdate.Name == x.Name && x.Id != Id)
                             .FirstOrDefaultAsync();
 
         if (namedProduct != null)
         {
-            throw new AppException(HttpStatusCode.Conflict, String.Format(ErrorMessages.CONFLICTED_ERROR, "Product", "Name", productUpdate.Name));
+            throw new AppException(HttpStatusCode.Conflict, string.Format(ErrorMessages.CONFLICTED_ERROR, "Product", "Name", productUpdate.Name));
         }
 
-        var categories = _categoryDbSet.Where(x => productUpdate.CategoryIds.Contains(x.Id));
+        var categories = _dbContext.Categories.Where(x => productUpdate.CategoryIds.Contains(x.Id));
         if (categories.Count() != productUpdate.CategoryIds.Count)
         {
-            throw new AppException(HttpStatusCode.NotFound, String.Format(ErrorMessages.NOT_FOUND_ERROR, "Category", "Id", nameof(productUpdate.CategoryIds)));
+            throw new AppException(HttpStatusCode.NotFound, string.Format(ErrorMessages.NOT_FOUND_ERROR, "Category", "Id", nameof(productUpdate.CategoryIds)));
         }
 
         var productCategories = new List<ProductCategoryEntity>();
@@ -155,20 +153,20 @@ public class ProductService : BaseService<ProductEntity>, IProductService
 
         await _dbContext.SaveChangesAsync();
 
-        return _mapper.Map<ProductDTO>(product);
+        return _mapper.Map<ProductDetailDTO>(product);
     }
-    public async Task<ProductDTO> Delete(string id)
+    public async Task<ProductDetailDTO> DeleteProductAsync(string id)
     {
-        var product = await _dbSet.FindAsync(id);
+        var product = await _dbContext.Products.FindAsync(id);
         if (product == null)
         {
-            throw new AppException(HttpStatusCode.NotFound, String.Format(ErrorMessages.NOT_FOUND_ERROR, "product", "id", id));
+            throw new AppException(HttpStatusCode.NotFound, string.Format(ErrorMessages.NOT_FOUND_ERROR, "product", "id", id));
         }
 
-        _dbSet.Remove(product);
+        _dbContext.Products.Remove(product);
 
         await _dbContext.SaveChangesAsync();
 
-        return _mapper.Map<ProductDTO>(product);
+        return _mapper.Map<ProductDetailDTO>(product);
     }
 }

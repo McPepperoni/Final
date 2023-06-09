@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using WebApi.DTOs;
+using WebApi.DTOs.UserDTO;
 using WebApi.Services;
 
 namespace WebApi.Controllers;
@@ -25,13 +25,13 @@ public class UserController : BaseController
     }
 
     [Authorize(Roles = "Admin")]
-    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<UserDTO>))]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<UserDetailDTO>))]
     [HttpGet]
     public async Task<IActionResult> Get()
     => Ok(await _userService.Get());
 
     [HttpGet("{id:length(36)}")]
-    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(UserDTO))]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(UserDetailDTO))]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Get(string id)
     => Ok(await _userService.Get(id));
@@ -47,7 +47,7 @@ public class UserController : BaseController
 
     [Authorize(Roles = "Admin")]
     [HttpDelete("{id:length(36)}")]
-    [ProducesResponseType(StatusCodes.Status204NoContent, Type = typeof(UserDTO))]
+    [ProducesResponseType(StatusCodes.Status204NoContent, Type = typeof(UserDetailDTO))]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Delete(string id)
     {

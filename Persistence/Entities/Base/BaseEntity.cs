@@ -10,12 +10,6 @@ public class BaseEntity : ITimestamp
     public string Id { get; set; }
     public DateTime? CreatedAt { get; set; }
     public DateTime? ModifiedAt { get; set; }
-
-    public BaseEntity()
-    {
-        ModifiedAt = DateTime.UtcNow;
-        CreatedAt = CreatedAt ?? ModifiedAt;
-    }
 }
 
 public interface ISoftDeletable

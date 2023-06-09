@@ -40,19 +40,21 @@ public class TestClassFixture : IClassFixture<TestWebApplicationFactory<Program>
 
         var scope = _factory.Services.CreateScope();
         var settings = scope.ServiceProvider.GetRequiredService<AppSettings>();
+        var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
 
         _JWTKey = settings.JWT.Key;
+        dbContext.Database.EnsureDeleted();
 
         _client = _factory.CreateClient();
         _client.BaseAddress = new Uri(_client.BaseAddress.ToString() + "api/v1/");
-        SeedData();
+        SeedData(dbContext);
     }
 
-    protected void SeedData()
+    protected void SeedData(ApplicationDbContext dbContext)
     {
         Console.WriteLine("Begin seeding data...");
         using var scope = _factory.Services.CreateScope();
-        var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
         dbContext.Database.Migrate();
 
         var RoleAdmin = new IdentityRole<string>();
@@ -64,6 +66,7 @@ public class TestClassFixture : IClassFixture<TestWebApplicationFactory<Program>
 
             foreach (var role in roles)
             {
+                role.Id = Guid.NewGuid().ToString();
                 role.NormalizedName = role.Name;
                 dbContext.Roles.Add(role);
                 if (role.Name == "Admin")
@@ -115,36 +118,6 @@ public class TestClassFixture : IClassFixture<TestWebApplicationFactory<Program>
                     User = mappedUser;
                 }
             }
-        }
-
-        if (!dbContext.Products.Any())
-        {
-            var categories = GetJson<CategoryEntity>(@"Db/CategoryData.json");
-            var products = GetJson<ProductEntity>(@"Db/ProductData.json");
-
-            foreach (var item in categories)
-            {
-                dbContext.Categories.Add(item);
-            }
-
-            foreach (var item in products)
-            {
-                item.Categories = new();
-                var random = new Random();
-                for (int i = 0; i < random.Next(2, 5); i++)
-                {
-                    var productCategory = new ProductCategoryEntity()
-                    {
-                        Category = categories[random.Next(categories.Count)]
-                    };
-
-                    item.Categories.Add(productCategory);
-                }
-                item.ImgSrc = $"https://source.unsplash.com/random/800x800/?img={random.Next(20)}";
-
-                dbContext.Products.Add(item);
-            }
-
         }
 
         dbContext.SaveChanges();

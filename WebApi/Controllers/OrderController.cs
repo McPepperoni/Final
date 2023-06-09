@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-using WebApi.DTOs;
+using WebApi.DTOs.OrderDTO;
 using WebApi.Services;
 
 namespace WebApi.Controllers;
@@ -43,13 +43,13 @@ public class OrderController : BaseController
         return NoContent();
     }
 
-    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<OrderDTO>))]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<OrderDetailDTO>))]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [HttpGet("all/{orderState}")]
     public async Task<IActionResult> Filter(string orderState)
     => Ok(await _orderService.Filter(orderState));
 
-    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<OrderDTO>))]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<OrderDetailDTO>))]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [HttpGet("{id}")]
     public async Task<IActionResult> Get(string id)

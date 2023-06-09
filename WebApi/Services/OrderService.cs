@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Data;
 using System.Net;
 using AutoMapper;
@@ -6,21 +5,21 @@ using Microsoft.EntityFrameworkCore;
 using Persistence;
 using Persistence.Entities;
 using WebApi.Constants;
-using WebApi.DTOs;
+using WebApi.DTOs.OrderDTO;
 using WebApi.Middleware.ExceptionHandler;
 
 namespace WebApi.Services;
 
 public interface IOrderService
 {
-    Task<OrderDTO> CreateAsync(CreateOrderDTO createOrder);
+    Task<OrderDetailDTO> CreateAsync(CreateOrderDTO createOrder);
     Task UpdateOrder(string id, string orderStatus);
     Task CancelOrderAsync(string id);
-    Task<List<OrderDTO>> Filter(string orderState);
-    Task<OrderDTO> Get(string id);
+    Task<List<OrderDetailDTO>> Filter(string orderState);
+    Task<OrderDetailDTO> Get(string id);
 }
 
-public class OrderService : BaseService<OrderEntity>, IOrderService
+public class OrderService : BaseService, IOrderService
 {
     private readonly DbSet<CartProductEntity> _cartProducts;
     private readonly DbSet<OrderProductEntity> _orderProducts;
@@ -33,7 +32,7 @@ public class OrderService : BaseService<OrderEntity>, IOrderService
         _cartDbSet = dbContext.Carts;
     }
 
-    public async Task<OrderDTO> CreateAsync(CreateOrderDTO createOrder)
+    public async Task<OrderDetailDTO> CreateAsync(CreateOrderDTO createOrder)
     {
         var cart = await _cartDbSet
                             .Where(x => x.UserId == _userId)
@@ -43,7 +42,7 @@ public class OrderService : BaseService<OrderEntity>, IOrderService
 
         if (cart == null)
         {
-            throw new AppException(HttpStatusCode.NotFound, String.Format(ErrorMessages.NOT_FOUND_ERROR, "User", "id", _userId));
+            throw new AppException(HttpStatusCode.NotFound, string.Format(ErrorMessages.NOT_FOUND_ERROR, "User", "id", _userId));
         }
 
         var cartProductsId = new List<string>();
@@ -57,7 +56,7 @@ public class OrderService : BaseService<OrderEntity>, IOrderService
         {
             if (!cartProductsId.Contains(item.ProductId))
             {
-                throw new AppException(HttpStatusCode.BadRequest, String.Format(ErrorMessages.DOES_NOT_MATCH, "CartProduct", "OrderProduct"));
+                throw new AppException(HttpStatusCode.BadRequest, string.Format(ErrorMessages.DOES_NOT_MATCH, "CartProduct", "OrderProduct"));
             }
 
             var cartProduct = cart.CartProducts
@@ -81,20 +80,20 @@ public class OrderService : BaseService<OrderEntity>, IOrderService
         };
         order.Status = OrderStatus.WAIT_FOR_APPROVAL;
 
-        await _dbSet.AddAsync(order);
+        await _dbContext.Orders.AddAsync(order);
 
         await _dbContext.SaveChangesAsync();
 
-        return _mapper.Map<OrderDTO>(order);
+        return _mapper.Map<OrderDetailDTO>(order);
     }
 
     public async Task CancelOrderAsync(string id)
     {
-        var order = await _dbSet.FindAsync(id);
+        var order = await _dbContext.Orders.FindAsync(id);
 
         if (order == null)
         {
-            throw new AppException(HttpStatusCode.NotFound, String.Format(ErrorMessages.NOT_FOUND_ERROR, "Order", "Id", id));
+            throw new AppException(HttpStatusCode.NotFound, string.Format(ErrorMessages.NOT_FOUND_ERROR, "Order", "Id", id));
         }
 
         order.Status = OrderStatus.CANCELED;
@@ -105,13 +104,13 @@ public class OrderService : BaseService<OrderEntity>, IOrderService
     {
         if ((orderState != OrderStatus.CANCELED && orderState != OrderStatus.DELIVERED && orderState != OrderStatus.DELIVERING && orderState != OrderStatus.WAIT_FOR_APPROVAL) || orderState == OrderStatus.CANCELED)
         {
-            throw new AppException(HttpStatusCode.BadRequest, String.Format(ErrorMessages.BAD_REQUEST_INVALID, "Order State"));
+            throw new AppException(HttpStatusCode.BadRequest, string.Format(ErrorMessages.BAD_REQUEST_INVALID, "Order State"));
         }
 
-        var order = await _dbSet.FindAsync(id);
+        var order = await _dbContext.Orders.FindAsync(id);
         if (order == null)
         {
-            throw new AppException(HttpStatusCode.NotFound, String.Format(ErrorMessages.NOT_FOUND_ERROR, "Order", "Id", id));
+            throw new AppException(HttpStatusCode.NotFound, string.Format(ErrorMessages.NOT_FOUND_ERROR, "Order", "Id", id));
         }
 
         order.Status = orderState;
@@ -119,26 +118,26 @@ public class OrderService : BaseService<OrderEntity>, IOrderService
         await _dbContext.SaveChangesAsync();
     }
 
-    public async Task<List<OrderDTO>> Filter(string orderState = OrderStatus.WAIT_FOR_APPROVAL)
+    public async Task<List<OrderDetailDTO>> Filter(string orderState = OrderStatus.WAIT_FOR_APPROVAL)
     {
         if (orderState != OrderStatus.CANCELED && orderState != OrderStatus.DELIVERED && orderState != OrderStatus.DELIVERING && orderState != OrderStatus.WAIT_FOR_APPROVAL)
         {
-            throw new AppException(HttpStatusCode.BadRequest, String.Format(ErrorMessages.BAD_REQUEST_INVALID, "Order State"));
+            throw new AppException(HttpStatusCode.BadRequest, string.Format(ErrorMessages.BAD_REQUEST_INVALID, "Order State"));
         }
 
-        var orders = await _dbSet
+        var orders = await _dbContext.Orders
                             .Where(x => x.Status == orderState)
                             .Include(x => x.User)
                             .Include(x => x.Products)
                             .ThenInclude(x => x.Product)
                             .ToListAsync();
 
-        return _mapper.Map<List<OrderDTO>>(orders);
+        return _mapper.Map<List<OrderDetailDTO>>(orders);
     }
 
-    public async Task<OrderDTO> Get(string id)
+    public async Task<OrderDetailDTO> Get(string id)
     {
-        var order = await _dbSet
+        var order = await _dbContext.Orders
                             .Include(x => x.User)
                             .Include(x => x.Products)
                             .ThenInclude(x => x.Product)
@@ -146,9 +145,9 @@ public class OrderService : BaseService<OrderEntity>, IOrderService
 
         if (order == null)
         {
-            throw new AppException(HttpStatusCode.NotFound, String.Format(ErrorMessages.NOT_FOUND_ERROR, "Order", "Id", id));
+            throw new AppException(HttpStatusCode.NotFound, string.Format(ErrorMessages.NOT_FOUND_ERROR, "Order", "Id", id));
         }
 
-        return _mapper.Map<OrderDTO>(order);
+        return _mapper.Map<OrderDetailDTO>(order);
     }
 }

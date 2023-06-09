@@ -53,7 +53,7 @@ public class UserControllerTest : TestClassFixture
     [Fact]
     public async Task UpdateUser_ReturnNoContent()
     {
-        var accessToken = Create(AdminUser, _JWTKey, "User");
+        var accessToken = Create(User, _JWTKey, "User");
         _client.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken.Token}");
         var user = new UpdateUserDTO()
         {
@@ -63,7 +63,7 @@ public class UserControllerTest : TestClassFixture
             Address = "6237 shgdsg 438"
         };
 
-        var response = await _client.PutAsJsonAsync("User/e5ed5f2c-4d11-42d4-a840-2ba1d6e62c9a", user);
+        var response = await _client.PutAsJsonAsync("User/3b361729-1028-48dc-98c9-8535f88f87f1", user);
         Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
     }
 

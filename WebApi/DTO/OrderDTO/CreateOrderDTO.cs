@@ -1,12 +1,7 @@
 using FluentValidation;
+using WebApi.DTOs.OrderProductDTO;
 
-namespace WebApi.DTOs;
-public class OrderDTO : BaseDTO
-{
-    public UserDTO User { get; set; }
-    public string Status { get; set; }
-    public List<OrderProductDTO> Products { get; set; }
-}
+namespace WebApi.DTOs.OrderDTO;
 
 public class CreateOrderDTO
 {
@@ -17,5 +12,6 @@ public class CreateOrderDTOValidator : AbstractValidator<CreateOrderDTO>
 {
     public CreateOrderDTOValidator()
     {
+        RuleFor(x => x.Products).Must(x => x.Count > 0);
     }
 }

@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-using WebApi.DTOs;
+using WebApi.DTOs.CartDTO;
 using WebApi.Services;
 
 namespace WebApi.Controllers;
@@ -13,7 +13,7 @@ public class CartController : BaseController
         _cartService = cartService;
     }
 
-    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(CartDTO))]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(CartDetailDTO))]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [HttpGet]
     public async Task<IActionResult> Get()
@@ -22,19 +22,19 @@ public class CartController : BaseController
         return Ok(res);
     }
 
-    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(CartDTO))]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(CartDetailDTO))]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [HttpPut]
     public async Task<IActionResult> Update(UpdateCartDTO updateCart)
     => Ok(await _cartService.Update(updateCart));
 
-    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(CartDTO))]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(CartDetailDTO))]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [HttpDelete("{itemId}")]
     public async Task<IActionResult> RemoveFromCart(string itemId)
     => Ok(await _cartService.RemoveFromCart(itemId));
 
-    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(CartDTO))]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(CartDetailDTO))]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [HttpPost]

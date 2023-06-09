@@ -1,26 +1,25 @@
 using System.Net;
 using AutoMapper;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Persistence;
 using Persistence.Entities;
 using Persistence.Managers;
 using WebApi.Constants;
-using WebApi.DTOs;
+using WebApi.DTOs.UserDTO;
 using WebApi.Middleware.ExceptionHandler;
 
 namespace WebApi.Services;
 
 public interface IUserService
 {
-    Task<List<UserDTO>> Get();
-    Task<UserDTO> Get(string id);
+    Task<List<UserDetailDTO>> Get();
+    Task<UserDetailDTO> Get(string id);
     Task Create(CreateUserDTO createUser);
     Task Update(string id, UpdateUserDTO updateUser);
     Task Delete(string Id);
 }
 
-public class UserService : BaseService<UserEntity>, IUserService
+public class UserService : BaseService, IUserService
 {
     private readonly FinalUserManager _userManager;
     public UserService(ApplicationDbContext dbContext, IMapper mapper, FinalUserManager userManager, IHttpContextAccessor httpContextAccessor) : base(httpContextAccessor, dbContext, mapper)
@@ -28,32 +27,32 @@ public class UserService : BaseService<UserEntity>, IUserService
         _userManager = userManager;
     }
 
-    public async Task<List<UserDTO>> Get()
+    public async Task<List<UserDetailDTO>> Get()
     {
-        return _mapper.Map<List<UserDTO>>(await _dbSet.ToListAsync());
+        return _mapper.Map<List<UserDetailDTO>>(await _dbContext.Users.ToListAsync());
     }
 
-    public async Task<UserDTO> Get(string id)
+    public async Task<UserDetailDTO> Get(string id)
     {
-        var user = await _dbSet.FindAsync(id);
+        var user = await _userManager.FindByIdAsync(id);
 
         if (user == null)
         {
-            throw new AppException(HttpStatusCode.NotFound, String.Format(ErrorMessages.NOT_FOUND_ERROR, "User", "Id", id));
+            throw new AppException(HttpStatusCode.NotFound, string.Format(ErrorMessages.NOT_FOUND_ERROR, "User", "Id", id));
         }
 
-        return _mapper.Map<UserDTO>(user);
+        return _mapper.Map<UserDetailDTO>(user);
     }
 
     public async Task Create(CreateUserDTO createUser)
     {
-        var user = _mapper.Map<UserEntity>(createUser);
-        var existedUser = await _dbSet.FirstOrDefaultAsync(x => x.Email == createUser.Email);
+        var existedUser = await _userManager.FindByEmailAsync(createUser.Email);
         if (existedUser != null)
         {
-            throw new AppException(HttpStatusCode.Conflict, String.Format(ErrorMessages.CONFLICTED_ERROR, "User", "Email", createUser.Email));
+            throw new AppException(HttpStatusCode.Conflict, string.Format(ErrorMessages.CONFLICTED_ERROR, "User", "Email", createUser.Email));
         }
 
+        var user = _mapper.Map<UserEntity>(createUser);
         var result = await _userManager.CreateAsync(user, createUser.Password);
         if (!result.Succeeded)
         {
@@ -69,10 +68,10 @@ public class UserService : BaseService<UserEntity>, IUserService
     }
     public async Task Update(string id, UpdateUserDTO updateUser)
     {
-        var user = await _dbSet.FindAsync(id);
+        var user = await _userManager.FindByIdAsync(id);
         if (user == null)
         {
-            throw new AppException(HttpStatusCode.NotFound, String.Format(ErrorMessages.NOT_FOUND_ERROR, "User", "id", id));
+            throw new AppException(HttpStatusCode.NotFound, string.Format(ErrorMessages.NOT_FOUND_ERROR, "User", "id", id));
         }
 
         user.Email = updateUser.Email;
@@ -80,18 +79,16 @@ public class UserService : BaseService<UserEntity>, IUserService
         user.PhoneNumber = updateUser.PhoneNumber;
         user.Address = updateUser.Address;
 
-        await _dbContext.SaveChangesAsync();
+        await _userManager.UpdateAsync(user);
     }
     public async Task Delete(string id)
     {
-        var user = await _dbSet.FindAsync(id);
+        var user = await _userManager.FindByIdAsync(id);
         if (user == null)
         {
-            throw new AppException(HttpStatusCode.NotFound, String.Format(ErrorMessages.NOT_FOUND_ERROR, "User", "Id", id));
+            throw new AppException(HttpStatusCode.NotFound, string.Format(ErrorMessages.NOT_FOUND_ERROR, "User", "Id", id));
         }
 
-        _dbSet.Remove(user);
-
-        await _dbContext.SaveChangesAsync();
+        await _userManager.DeleteAsync(user);
     }
 }

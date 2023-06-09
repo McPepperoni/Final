@@ -1,6 +1,6 @@
 using AutoMapper;
 using Persistence.Entities;
-using WebApi.DTOs;
+using WebApi.DTOs.CategoryDTO;
 
 namespace WebApi.Helpers.MappingProfiles;
 
@@ -8,7 +8,7 @@ public class CategoryProfile : Profile
 {
     public CategoryProfile()
     {
-        CreateMap<CategoryEntity, CategoryDTO>()
+        CreateMap<CategoryEntity, CategoryDetailDTO>()
         .ReverseMap();
     }
 }

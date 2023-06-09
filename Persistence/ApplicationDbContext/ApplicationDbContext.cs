@@ -26,6 +26,10 @@ public class ApplicationDbContext : IdentityDbContext<UserEntity, IdentityRole<s
     {
         base.OnModelCreating(builder);
         builder.Entity<UserEntity>()
+        .Property(x => x.Id)
+        .ValueGeneratedOnAdd();
+
+        builder.Entity<UserEntity>()
         .HasOne(x => x.Cart)
         .WithOne()
         .HasForeignKey<CartEntity>(x => x.UserId)
@@ -128,7 +132,6 @@ public class ApplicationDbContext : IdentityDbContext<UserEntity, IdentityRole<s
             if (entity.State == EntityState.Added)
             {
                 ((ITimestamp)entity.Entity).CreatedAt = now;
-                ((ITimestamp)entity.Entity).ModifiedAt = now;
             }
             else if (entity.State == EntityState.Modified)
             {
@@ -137,7 +140,6 @@ public class ApplicationDbContext : IdentityDbContext<UserEntity, IdentityRole<s
             else if (entity.State == EntityState.Deleted)
             {
                 entity.State = EntityState.Unchanged;
-                ((ITimestamp)entity.Entity).ModifiedAt = now;
                 ((ISoftDeletable)entity.Entity).DeletedAt = now;
             }
         }

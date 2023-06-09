@@ -52,9 +52,3 @@ public class PaginationResponseDTO<TData> where TData : class
         Data = data.Skip(PageData.Page * PageData.PerPage).Take(PageData.PerPage).ToList();
     }
 }
-
-public class ListDTO<T> where T : class
-{
-    public int Count { get; set; }
-    public List<T> Items { get; set; }
-}

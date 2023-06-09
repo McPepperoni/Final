@@ -1,7 +1,6 @@
-using System.Net;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using WebApi.DTOs;
+using WebApi.DTOs.CategoryDTO;
 using WebApi.Services;
 
 namespace WebApi.Controllers;
@@ -16,19 +15,19 @@ public class CategoryController : BaseController
         _categoryService = categoryService;
     }
 
-    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<CategoryDTO>))]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<CategoryDetailDTO>))]
     [HttpGet]
     public async Task<IActionResult> Get()
     => Ok(await _categoryService.Get());
 
-    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<CategoryDTO>))]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<CategoryDetailDTO>))]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [HttpGet("{id:length(36)}")]
     public async Task<IActionResult> Get(string id)
     => Ok(await _categoryService.Get(id));
 
     [Authorize(Roles = "Admin")]
-    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<CategoryDTO>))]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<CategoryDetailDTO>))]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [HttpPut("{id:length(36)}")]
     public async Task<IActionResult> Update(string id, [FromBody] UpdateCategoryDTO updateCategory)
@@ -46,7 +45,7 @@ public class CategoryController : BaseController
 
     [Authorize(Roles = "Admin")]
     [HttpDelete("{id:length(36)}")]
-    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(CategoryDTO))]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(CategoryDetailDTO))]
     public async Task<IActionResult> Delete(string id)
      => Ok(await _categoryService.Delete(id));
 

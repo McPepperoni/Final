@@ -4,21 +4,21 @@ using Microsoft.EntityFrameworkCore;
 using Persistence;
 using Persistence.Entities;
 using WebApi.Constants;
-using WebApi.DTOs;
+using WebApi.DTOs.CategoryDTO;
 using WebApi.Middleware.ExceptionHandler;
 
 namespace WebApi.Services;
 
 public interface ICategoryService
 {
-    Task<List<CategoryDTO>> Get();
-    Task<CategoryDTO> Get(string id);
+    Task<List<CategoryDetailDTO>> Get();
+    Task<CategoryDetailDTO> Get(string id);
     Task Create(CreateCategoryDTO categoryCreate);
-    Task<CategoryDTO> Update(string id, UpdateCategoryDTO updateCart);
-    Task<CategoryDTO> Delete(string id);
+    Task<CategoryDetailDTO> Update(string id, UpdateCategoryDTO updateCart);
+    Task<CategoryDetailDTO> Delete(string id);
 }
 
-public class CategoryService : BaseService<CategoryEntity>, ICategoryService
+public class CategoryService : BaseService, ICategoryService
 {
     private readonly DbSet<ProductEntity> _productDbSet;
     private readonly DbSet<CartProductEntity> _categoryProductDbSet;
@@ -30,11 +30,11 @@ public class CategoryService : BaseService<CategoryEntity>, ICategoryService
 
     public async Task Create(CreateCategoryDTO categoryCreate)
     {
-        var category = await _dbSet.Where(x => x.Name == categoryCreate.Name).FirstOrDefaultAsync();
+        var category = await _dbContext.Categories.Where(x => x.Name == categoryCreate.Name).FirstOrDefaultAsync();
 
         if (category != null)
         {
-            throw new AppException(HttpStatusCode.Conflict, String.Format(ErrorMessages.CONFLICTED_ERROR, "Category", "name", categoryCreate.Name));
+            throw new AppException(HttpStatusCode.Conflict, string.Format(ErrorMessages.CONFLICTED_ERROR, "Category", "name", categoryCreate.Name));
         }
 
         category = new CategoryEntity()
@@ -42,56 +42,56 @@ public class CategoryService : BaseService<CategoryEntity>, ICategoryService
             Name = categoryCreate.Name,
         };
 
-        await _dbSet.AddAsync(category);
+        await _dbContext.Categories.AddAsync(category);
         await _dbContext.SaveChangesAsync();
     }
 
-    public async Task<CategoryDTO> Get(string id)
+    public async Task<CategoryDetailDTO> Get(string id)
     {
-        var category = await _dbSet.Where(x => x.Id == id).FirstOrDefaultAsync();
+        var category = await _dbContext.Categories.Where(x => x.Id == id).FirstOrDefaultAsync();
 
         if (category == null)
         {
-            throw new AppException(HttpStatusCode.NotFound, String.Format(ErrorMessages.NOT_FOUND_ERROR, "category", "Id", id));
+            throw new AppException(HttpStatusCode.NotFound, string.Format(ErrorMessages.NOT_FOUND_ERROR, "category", "Id", id));
         }
 
-        return _mapper.Map<CategoryDTO>(category);
+        return _mapper.Map<CategoryDetailDTO>(category);
     }
 
-    public async Task<List<CategoryDTO>> Get()
+    public async Task<List<CategoryDetailDTO>> Get()
     {
-        return _mapper.Map<List<CategoryDTO>>(await _dbSet.ToListAsync());
+        return _mapper.Map<List<CategoryDetailDTO>>(await _dbContext.Categories.ToListAsync());
     }
 
-    public async Task<CategoryDTO> Update(string id, UpdateCategoryDTO updateCategory)
+    public async Task<CategoryDetailDTO> Update(string id, UpdateCategoryDTO updateCategory)
     {
-        var category = await _dbSet.Where(x => x.Id == id).FirstOrDefaultAsync();
+        var category = await _dbContext.Categories.Where(x => x.Id == id).FirstOrDefaultAsync();
 
         if (category == null)
         {
-            throw new AppException(HttpStatusCode.NotFound, String.Format(ErrorMessages.NOT_FOUND_ERROR, "category", "Id", id));
+            throw new AppException(HttpStatusCode.NotFound, string.Format(ErrorMessages.NOT_FOUND_ERROR, "category", "Id", id));
         }
 
-        var existedCategory = await _dbSet.Where(x => x.Name == updateCategory.Name && x.Id != id).FirstOrDefaultAsync();
+        var existedCategory = await _dbContext.Categories.Where(x => x.Name == updateCategory.Name && x.Id != id).FirstOrDefaultAsync();
         if (existedCategory != null)
         {
-            throw new AppException(HttpStatusCode.Conflict, String.Format(ErrorMessages.CONFLICTED_ERROR, "Category", "name", updateCategory.Name));
+            throw new AppException(HttpStatusCode.Conflict, string.Format(ErrorMessages.CONFLICTED_ERROR, "Category", "name", updateCategory.Name));
         }
 
         category.Name = updateCategory.Name;
 
         await _dbContext.SaveChangesAsync();
 
-        return _mapper.Map<CategoryDTO>(category);
+        return _mapper.Map<CategoryDetailDTO>(category);
     }
 
-    public async Task<CategoryDTO> Delete(string id)
+    public async Task<CategoryDetailDTO> Delete(string id)
     {
-        var category = await _dbSet.FindAsync(id);
-        _dbSet.Remove(category);
+        var category = await _dbContext.Categories.FindAsync(id);
+        _dbContext.Categories.Remove(category);
 
         await _dbContext.SaveChangesAsync();
 
-        return _mapper.Map<CategoryDTO>(category);
+        return _mapper.Map<CategoryDetailDTO>(category);
     }
 }
